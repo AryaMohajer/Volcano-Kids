@@ -6,7 +6,8 @@ import Foundation
 class AudioService: ObservableObject {
     static let shared = AudioService()
     
-    private var audioPlayer: AVAudioPlayer?
+    // Use nonisolated(unsafe) to allow access from deinit
+    nonisolated(unsafe) private var audioPlayer: AVAudioPlayer?
     @Published var isPlaying = false
     
     private init() {
@@ -65,8 +66,10 @@ class AudioService: ObservableObject {
         isPlaying = true
     }
     
-    deinit {
-        stopBackgroundMusic()
+    nonisolated deinit {
+        // Directly stop the audio player - safe because audioPlayer is nonisolated(unsafe)
+        audioPlayer?.stop()
+        audioPlayer = nil
     }
 }
 

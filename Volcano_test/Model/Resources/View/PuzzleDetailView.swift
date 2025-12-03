@@ -2,6 +2,7 @@ import SwiftUI
 
 struct PuzzleDetailView: View {
     let puzzle: PuzzleItem
+    @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
         ZStack {
@@ -16,7 +17,21 @@ struct PuzzleDetailView: View {
             )
             .ignoresSafeArea()
 
-            ScrollView {
+            VStack {
+                HStack {
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Image(systemName: "chevron.left.circle.fill")
+                            .font(.system(size: 40))
+                            .foregroundColor(.white)
+                            .shadow(color: .black, radius: 5)
+                    }
+                    Spacer()
+                }
+                .padding()
+                
+                ScrollView {
                 VStack {
                     Image(puzzle.imageName)
                         .resizable()
@@ -49,8 +64,9 @@ struct PuzzleDetailView: View {
                     }
                 }
                 .padding()
+                }
             }
         }
-        .navigationTitle("Puzzle Details")
+        .navigationBarBackButtonHidden(true)
     }
 }

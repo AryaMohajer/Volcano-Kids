@@ -89,11 +89,9 @@ struct DetailView1: View {
         .onAppear {
             checkIfPageAlreadyUnlocked()
         }
-        .background(
-            NavigationLink(destination: ModelView().navigationBarBackButtonHidden(true), isActive: $navigateToNextPage) {
-                EmptyView()
-            }
-        )
+        .sheet(isPresented: $navigateToNextPage) {
+            ModelView()
+        }
     }
         
 

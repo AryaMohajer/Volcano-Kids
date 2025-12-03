@@ -1,12 +1,22 @@
 import Foundation
+import SwiftUI
 
 struct PuzzleItem: Identifiable, Hashable {
-    let id: UUID = UUID() // Unique
+    let id: UUID
     let title: String
     let subtitle: String
     let imageName: String
     let puzzleIndex: Int  // Added to map to PuzzleView
     let text: String  // Added extra text info
+    
+    init(title: String, subtitle: String, imageName: String, puzzleIndex: Int, text: String) {
+        self.id = UUID()
+        self.title = title
+        self.subtitle = subtitle
+        self.imageName = imageName
+        self.puzzleIndex = puzzleIndex
+        self.text = text
+    }
 }
 
 // MARK: - ViewModel

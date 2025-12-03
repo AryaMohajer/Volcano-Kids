@@ -4,7 +4,7 @@ struct PuzzleListView: View {
     
     @StateObject private var viewModel = PuzzleListViewModel()
     @Environment(\.presentationMode) var presentationMode
-
+    
     var body: some View {
         NavigationView {
             ZStack {
@@ -21,9 +21,10 @@ struct PuzzleListView: View {
                         Button(action: {
                             presentationMode.wrappedValue.dismiss()
                         }) {
-                            Image(systemName: "chevron.left")
-                                .foregroundColor(AppTheme.Colors.textPrimary)
-                                .padding()
+                            Image(systemName: "chevron.left.circle.fill")
+                                .font(.system(size: 40))
+                                .foregroundColor(.white)
+                                .shadow(color: .black, radius: 5)
                         }
                         Spacer()
                     }
@@ -37,7 +38,7 @@ struct PuzzleListView: View {
                     Spacer()
                     
                     // List of Volcanoes
-                    List(viewModel.puzzleItems, id: \.id) { puzzle in
+                    List(viewModel.puzzleItems) { puzzle in
                         NavigationLink(destination: PuzzleDetailView(puzzle: puzzle)) {
                             PuzzleRowView(puzzle: puzzle)
                         }
@@ -57,3 +58,4 @@ struct PuzzleListView: View {
             .ignoresSafeArea()
         }
     }
+}

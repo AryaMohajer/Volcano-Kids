@@ -16,14 +16,15 @@ struct ModelView: View {
                     Button(action: {
                         presentationMode.wrappedValue.dismiss()
                     }) {
-                        Image(systemName: "chevron.left")
+                        Image(systemName: "chevron.left.circle.fill")
+                            .font(.system(size: 40))
                             .foregroundColor(.white)
-                      
+                            .shadow(color: .black, radius: 5)
                     }
                     Spacer()
                 }
-                .padding(.leading, 30)
-                .padding(.top,-100)
+                .padding(.leading, 20)
+                .padding(.top, 20)
                 
                 VStack {
                     SceneKitView(scene: viewModel.scene)
