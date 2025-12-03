@@ -5,17 +5,23 @@ struct PuzzleRowView: View {
 
     var body: some View {
         HStack(spacing: AppTheme.Spacing.medium) {
-            // Equal-sized icon with consistent styling
-            Image(puzzle.imageName)
-                .resizable()
-                .scaledToFill()
-                .frame(width: AppTheme.Sizes.thumbnailSize, height: AppTheme.Sizes.thumbnailSize)
-                .clipShape(RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium))
-                .overlay(
-                    RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
-                        .stroke(Color.white.opacity(0.3), lineWidth: 2)
-                )
-                .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 2)
+            // Equal-sized icon with consistent styling and red background
+            ZStack {
+                RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
+                    .fill(AppTheme.Colors.primaryBackground)
+                    .frame(width: AppTheme.Sizes.thumbnailSize, height: AppTheme.Sizes.thumbnailSize)
+                
+                Image(puzzle.imageName)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: AppTheme.Sizes.thumbnailSize, height: AppTheme.Sizes.thumbnailSize)
+                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium))
+            }
+            .overlay(
+                RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
+                    .stroke(Color.white.opacity(0.3), lineWidth: 2)
+            )
+            .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 2)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(puzzle.title)
