@@ -3,6 +3,7 @@ import SwiftUI
 struct DetailView3: View {
     @ObservedObject var viewModel: PageViewModel
     let pageId: Int
+    @StateObject private var partsViewModel = VolcanoPartsViewModel()
     @State private var currentSection: Int = 0 // 0 = educational, 1 = quiz
     @State private var currentQuestionIndex = 0
     @State private var quizAnswers: [Int] = []
@@ -11,45 +12,6 @@ struct DetailView3: View {
     @State private var showWrongAnswerAlert = false
     @State private var lastScore = 0
     @Environment(\.presentationMode) var presentationMode
-    
-    // Educational content - volcano parts
-    let volcanoParts: [VolcanoPartInfo] = [
-        VolcanoPartInfo(
-            name: "Crater",
-            emoji: "🌋",
-            description: "The crater is the big opening at the very top of the volcano! It's like a giant bowl where hot lava comes out when the volcano erupts. Think of it as the volcano's mouth!",
-            funFact: "Some craters are so big, you could fit a whole city inside them!",
-            color: .red
-        ),
-        VolcanoPartInfo(
-            name: "Vent",
-            emoji: "🕳️",
-            description: "The vent is like a tunnel inside the volcano! It's the pathway that helps hot magma travel from deep underground all the way up to the crater. It's the volcano's secret passage!",
-            funFact: "The vent can be very narrow or super wide, depending on the volcano!",
-            color: .orange
-        ),
-        VolcanoPartInfo(
-            name: "Magma Chamber",
-            emoji: "🔥",
-            description: "Deep, deep underground, there's a special room called the magma chamber. This is where super hot, melted rock called magma waits and gets ready to erupt! It's like the volcano's hidden treasure room!",
-            funFact: "The magma chamber can be as big as a whole mountain!",
-            color: .yellow
-        ),
-        VolcanoPartInfo(
-            name: "Lava Flow",
-            emoji: "🌊",
-            description: "When magma comes out of the crater, it becomes lava! Lava flows down the sides of the volcano like a hot, glowing river. It's bright red and orange, and it's super, super hot!",
-            funFact: "Lava can flow as fast as a car on a highway!",
-            color: .red
-        ),
-        VolcanoPartInfo(
-            name: "Ash Cloud",
-            emoji: "☁️",
-            description: "When a volcano erupts, it shoots tiny pieces of rock and dust high into the sky! This creates a big, dark cloud called an ash cloud. It's like nature's own fireworks show!",
-            funFact: "Ash clouds can travel all around the world in the wind!",
-            color: .gray
-        )
-    ]
     
     // Quiz questions - 30 questions
     let quizQuestions: [QuizQuestion] = [
@@ -158,70 +120,176 @@ struct DetailView3: View {
         .navigationBarBackButtonHidden(true)
     }
     
-    // MARK: - Educational Section
+    // MARK: - Educational Section (Redesigned)
     private var educationalSection: some View {
-        ScrollView {
-            VStack(spacing: 25) {
-                // Title
-                Text("Parts of a Volcano")
-                    .font(.custom("Noteworthy-Bold", size: 42))
-                                            .foregroundColor(.white)
-                    .shadow(color: .black, radius: 10)
-                    .padding(.top, 10)
-                                    
-                Text("Learn about the amazing parts that make up a volcano! 🌋")
-                    .font(.custom("Noteworthy-Bold", size: 20))
-                                        .foregroundColor(.white.opacity(0.9))
-                                        .multilineTextAlignment(.center)
-                                        .padding(.horizontal)
+        VStack(spacing: 0) {
+            // Step indicator
+            HStack {
+                Text("Step \(partsViewModel.currentStep + 1) of \(partsViewModel.totalSteps)")
+                    .font(.custom("Noteworthy-Bold", size: 18))
+                    .foregroundColor(.white.opacity(0.9))
+                    .padding(.horizontal, AppTheme.Spacing.medium)
+                    .padding(.vertical, AppTheme.Spacing.small)
+                    .background(
+                        Capsule()
+                            .fill(Color.black.opacity(0.3))
+                    )
                 
-                // Volcano parts cards
-                ForEach(Array(volcanoParts.enumerated()), id: \.element.id) { index, part in
-                    VolcanoPartCard(part: part, index: index)
-                        .padding(.horizontal)
+                Spacer()
+            }
+            .padding(.horizontal)
+            .padding(.top, AppTheme.Spacing.small)
+            
+            // Progress dots
+            HStack(spacing: 8) {
+                ForEach(0..<partsViewModel.totalSteps, id: \.self) { index in
+                    Circle()
+                        .fill(index <= partsViewModel.currentStep ? Color.yellow : Color.white.opacity(0.3))
+                        .frame(width: 10, height: 10)
+                        .scaleEffect(index == partsViewModel.currentStep ? 1.3 : 1.0)
+                        .animation(.spring(response: 0.3), value: partsViewModel.currentStep)
+                }
+            }
+            .padding(.vertical, AppTheme.Spacing.small)
+            
+            // Main content area with pagination
+            TabView(selection: $partsViewModel.currentStep) {
+                ForEach(0..<partsViewModel.totalSteps, id: \.self) { step in
+                    ScrollView {
+                        VStack(spacing: AppTheme.Spacing.large) {
+                            // Title
+                            Text("Parts of a Volcano")
+                                .font(.custom("Noteworthy-Bold", size: 38))
+                                .foregroundColor(.white)
+                                .shadow(color: .black, radius: 10)
+                                .padding(.top, AppTheme.Spacing.medium)
+                            
+                            // Current part card
+                            VolcanoPartCardView(
+                                part: partsViewModel.volcanoParts[step],
+                                stepNumber: step + 1,
+                                totalSteps: partsViewModel.totalSteps
+                            )
+                            .padding(.horizontal)
+                            
+                            // Fun fact flip card
+                            VStack(spacing: AppTheme.Spacing.medium) {
+                                Text("💡 Fun Fact!")
+                                    .font(.custom("Noteworthy-Bold", size: 22))
+                                    .foregroundColor(.yellow)
+                                
+                                FlipFactCardView(
+                                    fact: partsViewModel.volcanoParts[step].funFact,
+                                    emoji: partsViewModel.volcanoParts[step].emoji
+                                )
+                            }
+                            .padding(.horizontal)
+                            
+                            // Animated lava (only for Lava Flow step)
+                            if partsViewModel.volcanoParts[step].name == "Lava Flow" {
+                                VStack {
+                                    Text("Watch the lava flow! 🌊")
+                                        .font(.custom("Noteworthy-Bold", size: 20))
+                                        .foregroundColor(.white)
+                                    AnimatedLavaView()
+                                        .padding()
+                                }
+                                .padding(.horizontal)
                             }
                             
-                            // Fun facts section
-                FunFactsBox()
-                    .padding(.horizontal)
-                    .padding(.top, 10)
-                
-                // Quiz prompt
-                            VStack(spacing: 15) {
-                    Text("🧠 Ready to Test Your Knowledge?")
-                        .font(.custom("Noteworthy-Bold", size: 24))
-                                    .foregroundColor(.white)
-                                
-                                Button(action: {
-                        withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
-                            currentSection = 1
-                        }
-                                }) {
-                                    HStack {
-                            Image(systemName: "brain.head.profile")
-                                .font(.system(size: 24))
-                            Text("Start Quiz")
-                                .font(.custom("Noteworthy-Bold", size: 22))
+                            // Navigation buttons
+                            HStack(spacing: AppTheme.Spacing.medium) {
+                                // Previous button
+                                if !partsViewModel.isFirstStep {
+                                    Button(action: {
+                                        partsViewModel.previousStep()
+                                    }) {
+                                        HStack {
+                                            Image(systemName: "chevron.left")
+                                            Text("Previous")
+                                        }
+                                        .font(.custom("Noteworthy-Bold", size: 18))
+                                        .foregroundColor(.white)
+                                        .padding(.horizontal, AppTheme.Spacing.large)
+                                        .padding(.vertical, AppTheme.Spacing.medium)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
+                                                .fill(Color.blue.opacity(0.7))
+                                        )
                                     }
-                                    .foregroundColor(.white)
-                        .padding(.horizontal, 30)
-                                    .padding(.vertical, 15)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 25)
-                                .fill(
-                                    LinearGradient(
-                                        colors: [.purple, .blue],
-                                        startPoint: .leading,
-                                        endPoint: .trailing
-                                    )
-                                )
-                                .shadow(color: .purple, radius: 15)
-                        )
+                                }
+                                
+                                Spacer()
+                                
+                                // Next button
+                                if !partsViewModel.isLastStep {
+                                    Button(action: {
+                                        partsViewModel.nextStep()
+                                    }) {
+                                        HStack {
+                                            Text("Next Adventure")
+                                            Image(systemName: "chevron.right")
+                                        }
+                                        .font(.custom("Noteworthy-Bold", size: 18))
+                                        .foregroundColor(.white)
+                                        .padding(.horizontal, AppTheme.Spacing.large)
+                                        .padding(.vertical, AppTheme.Spacing.medium)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
+                                                .fill(
+                                                    LinearGradient(
+                                                        colors: [.orange, .red],
+                                                        startPoint: .leading,
+                                                        endPoint: .trailing
+                                                    )
+                                                )
+                                        )
+                                    }
+                                } else {
+                                    // Last step - show quiz prompt
+                                    VStack(spacing: AppTheme.Spacing.medium) {
+                                        Text("🎉 You've learned all the parts! 🎉")
+                                            .font(.custom("Noteworthy-Bold", size: 22))
+                                            .foregroundColor(.yellow)
+                                            .multilineTextAlignment(.center)
+                                        
+                                        Button(action: {
+                                            withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                                                currentSection = 1
+                                            }
+                                        }) {
+                                            HStack {
+                                                Image(systemName: "brain.head.profile")
+                                                    .font(.system(size: 24))
+                                                Text("Take Quiz")
+                                                    .font(.custom("Noteworthy-Bold", size: 22))
+                                            }
+                                            .foregroundColor(.white)
+                                            .padding(.horizontal, AppTheme.Spacing.extraLarge)
+                                            .padding(.vertical, AppTheme.Spacing.medium)
+                                            .background(
+                                                RoundedRectangle(cornerRadius: AppTheme.CornerRadius.large)
+                                                    .fill(
+                                                        LinearGradient(
+                                                            colors: [.purple, .blue],
+                                                            startPoint: .leading,
+                                                            endPoint: .trailing
+                                                        )
+                                                    )
+                                                    .shadow(color: .purple, radius: 15)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                            .padding(.horizontal)
+                            .padding(.bottom, AppTheme.Spacing.extraLarge)
+                        }
                     }
+                    .tag(step)
                 }
-                .padding()
-                .padding(.bottom, 30)
             }
+            .tabViewStyle(.page(indexDisplayMode: .never))
         }
     }
     
@@ -244,8 +312,8 @@ struct DetailView3: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 15)
                     .padding(.vertical, 8)
-                    .background(
-                        RoundedRectangle(cornerRadius: 15)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 15)
                             .fill(Color.blue.opacity(0.7))
                     )
                 }
@@ -258,12 +326,12 @@ struct DetailView3: View {
                     // Quiz header
                     Text("🧠 Volcano Quiz")
                         .font(.custom("Noteworthy-Bold", size: 42))
-                        .foregroundColor(.white)
+                                    .foregroundColor(.white)
                         .shadow(color: .black, radius: 10)
                         .padding(.top, 10)
-                    
+                                
                     // Progress indicator
-                    VStack(spacing: 10) {
+                                VStack(spacing: 10) {
                         Text("Question \(currentQuestionIndex + 1) of \(quizQuestions.count)")
                             .font(.custom("Noteworthy-Bold", size: 20))
                             .foregroundColor(.white.opacity(0.9))
@@ -422,114 +490,6 @@ struct DetailView3: View {
     }
 }
 
-// MARK: - Volcano Part Card
-struct VolcanoPartCard: View {
-    let part: VolcanoPartInfo
-    let index: Int
-    @State private var appear = false
-    
-    var body: some View {
-        VStack(spacing: 15) {
-            HStack(spacing: 15) {
-                // Emoji
-                Text(part.emoji)
-                    .font(.system(size: 60))
-                    .scaleEffect(appear ? 1.0 : 0.5)
-                    .rotationEffect(.degrees(appear ? 0 : -180))
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(part.name)
-                        .font(.custom("Noteworthy-Bold", size: 28))
-                        .foregroundColor(.white)
-                    
-                    Text(part.description)
-                        .font(.custom("Noteworthy-Bold", size: 18))
-                        .foregroundColor(.white.opacity(0.9))
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-            }
-            
-            // Fun fact
-            HStack {
-                Text("💡")
-                    .font(.system(size: 20))
-                Text(part.funFact)
-                    .font(.custom("Noteworthy-Bold", size: 16))
-                    .foregroundColor(.yellow)
-                    .italic()
-            }
-            .padding(.horizontal)
-        }
-        .padding(20)
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            part.color.opacity(0.3) as Color,
-                            part.color.opacity(0.2) as Color,
-                            Color(white: 0, opacity: 0.4)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .shadow(color: part.color, radius: 15)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 20)
-                .stroke(
-                    LinearGradient(
-                        colors: [part.color, part.color.opacity(0.3) as Color],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ),
-                    lineWidth: 2
-                )
-        )
-        .onAppear {
-            withAnimation(.spring(response: 0.6, dampingFraction: 0.7).delay(Double(index) * 0.15)) {
-                appear = true
-            }
-        }
-    }
-}
-
-// MARK: - Fun Facts Box
-struct FunFactsBox: View {
-    let facts = [
-        "🌡️ Lava can be as hot as 1,200°C - that's hotter than your oven!",
-        "🏔️ Some volcanoes are taller than the clouds!",
-        "🌍 There are about 1,500 active volcanoes in the world!",
-        "⚡ Lightning can happen inside volcanic ash clouds!",
-        "🌊 Underwater volcanoes create new islands!"
-    ]
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 15) {
-            Text("🌟 Amazing Volcano Facts! 🌟")
-                .font(.custom("Noteworthy-Bold", size: 26))
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-            
-            ForEach(facts, id: \.self) { fact in
-                HStack(alignment: .top, spacing: 10) {
-                    Text(fact)
-                        .font(.custom("Noteworthy-Bold", size: 16))
-                        .foregroundColor(.white.opacity(0.95))
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                .padding(.vertical, 8)
-            }
-        }
-        .padding(20)
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color(white: 0, opacity: 0.3))
-                .shadow(radius: 15)
-        )
-    }
-}
 
 // MARK: - Single Question View
 struct SingleQuestionView: View {
@@ -615,12 +575,12 @@ struct WrongAnswerResultsView: View {
                     .foregroundColor(.white)
                 
                 // Score circle
-                ZStack {
+        ZStack {
                     Circle()
                         .stroke(Color.white.opacity(0.3), lineWidth: 15)
                         .frame(width: 150, height: 150)
                     
-                    Circle()
+                Circle()
                         .trim(from: 0, to: CGFloat(score) / CGFloat(total))
                         .stroke(
                             LinearGradient(
@@ -846,15 +806,6 @@ struct QuizResultsView: View {
 }
 
 // MARK: - Supporting Types
-struct VolcanoPartInfo: Identifiable {
-    let id = UUID()
-    let name: String
-    let emoji: String
-    let description: String
-    let funFact: String
-    let color: Color
-}
-
 struct QuizQuestion {
     let question: String
     let options: [String]
