@@ -1,0 +1,328 @@
+import SwiftUI
+
+/// Volcano Safety Tips Page
+struct DetailView6: View {
+    @ObservedObject var viewModel: PageViewModel
+    let pageId: Int
+    @StateObject private var safetyViewModel = SafetyTipsViewModel()
+    @Environment(\.presentationMode) var presentationMode
+    
+    var body: some View {
+        ZStack {
+            // Beautiful gradient background
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    Color(red: 0.1, green: 0.0, blue: 0.2),
+                    Color(red: 0.3, green: 0.0, blue: 0.1),
+                    AppTheme.Colors.primaryBackground,
+                    AppTheme.Colors.accent.opacity(0.8)
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                // Header with back button (only one)
+                HStack {
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 18, weight: .semibold))
+                            Text("Back")
+                                .font(.custom("Noteworthy-Bold", size: 17))
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                    }
+                    
+                    Spacer()
+                }
+                .padding(.horizontal, AppTheme.Spacing.medium)
+                .padding(.top, AppTheme.Spacing.small)
+                
+                // Educational Section with pagination
+                educationalSection
+            }
+        }
+        .navigationBarTitle("", displayMode: .inline)
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
+    }
+    
+    // MARK: - Educational Section (Redesigned to match Parts of Volcano)
+    private var educationalSection: some View {
+        VStack(spacing: 0) {
+            // Step indicator - centered
+            HStack {
+                Spacer()
+                Text("Step \(safetyViewModel.currentStep + 1) of \(safetyViewModel.safetyTips.count)")
+                    .font(.custom("Noteworthy-Bold", size: 18))
+                    .foregroundColor(.white.opacity(0.9))
+                    .padding(.horizontal, AppTheme.Spacing.medium)
+                    .padding(.vertical, AppTheme.Spacing.small)
+                    .background(
+                        Capsule()
+                            .fill(Color.black.opacity(0.3))
+                    )
+                Spacer()
+            }
+            .padding(.horizontal)
+            .padding(.top, AppTheme.Spacing.small)
+            
+            // Progress dots
+            HStack(spacing: 8) {
+                ForEach(0..<safetyViewModel.safetyTips.count, id: \.self) { index in
+                    Circle()
+                        .fill(index <= safetyViewModel.currentStep ? Color.yellow : Color.white.opacity(0.3))
+                        .frame(width: 10, height: 10)
+                        .scaleEffect(index == safetyViewModel.currentStep ? 1.3 : 1.0)
+                        .animation(.spring(response: 0.3), value: safetyViewModel.currentStep)
+                }
+            }
+            .padding(.vertical, AppTheme.Spacing.small)
+            
+            // Main content area with pagination
+            TabView(selection: $safetyViewModel.currentStep) {
+                ForEach(0..<safetyViewModel.safetyTips.count, id: \.self) { step in
+                    ScrollView {
+                        VStack(spacing: AppTheme.Spacing.large) {
+                            // Title
+                            Text("Volcano Safety Tips")
+                                .font(.custom("Noteworthy-Bold", size: 38))
+                                .foregroundColor(.white)
+                                .shadow(color: .black, radius: 10)
+                                .padding(.top, AppTheme.Spacing.medium)
+                            
+                            // Current tip card (using VolcanoPartCardView style)
+                            SafetyTipCardView(tip: safetyViewModel.safetyTips[step], viewModel: safetyViewModel)
+                                .padding(.horizontal)
+                            
+                            // Fun fact flip card
+                            VStack(spacing: AppTheme.Spacing.medium) {
+                                Text("💡 Fun Fact!")
+                                    .font(.custom("Noteworthy-Bold", size: 22))
+                                    .foregroundColor(.yellow)
+                                
+                                FlipFactCardView(
+                                    fact: safetyViewModel.safetyTips[step].funFact,
+                                    emoji: safetyViewModel.safetyTips[step].emoji
+                                )
+                            }
+                            .padding(.horizontal)
+                            
+                            // Mini Quiz - different question for each step
+                            let currentQuestion = safetyViewModel.getQuizQuestion(for: step)
+                            MiniQuizBlockView(
+                                question: currentQuestion.question,
+                                options: currentQuestion.options,
+                                correctAnswer: currentQuestion.correctAnswer,
+                                selectedAnswer: Binding(
+                                    get: { safetyViewModel.currentQuizAnswer },
+                                    set: { _ in }
+                                ),
+                                showResult: $safetyViewModel.showQuizResult,
+                                isCorrect: $safetyViewModel.isQuizCorrect,
+                                onAnswerSelected: { index in
+                                    safetyViewModel.checkQuizAnswer(index, for: currentQuestion)
+                                }
+                            )
+                            .padding(.horizontal)
+                            
+                            // Next button (only show if not last step)
+                            if step < safetyViewModel.safetyTips.count - 1 {
+                                HStack {
+                                    Spacer()
+                                    Button(action: {
+                                        safetyViewModel.nextStep()
+                                    }) {
+                                        HStack {
+                                            Text("Next Adventure")
+                                            Image(systemName: "chevron.right")
+                                        }
+                                        .font(.custom("Noteworthy-Bold", size: 18))
+                                        .foregroundColor(.white)
+                                        .padding(.horizontal, AppTheme.Spacing.large)
+                                        .padding(.vertical, AppTheme.Spacing.medium)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
+                                                .fill(
+                                                    LinearGradient(
+                                                        colors: [.orange, .red],
+                                                        startPoint: .leading,
+                                                        endPoint: .trailing
+                                                    )
+                                                )
+                                        )
+                                    }
+                                    Spacer()
+                                }
+                                .padding(.horizontal)
+                                .padding(.bottom, AppTheme.Spacing.extraLarge)
+                            } else {
+                                Spacer()
+                                    .frame(height: AppTheme.Spacing.extraLarge)
+                            }
+                        }
+                    }
+                    .tag(step)
+                }
+            }
+            .tabViewStyle(.page(indexDisplayMode: .never))
+        }
+    }
+}
+
+// MARK: - Main Story Card
+struct MainStoryCard: View {
+    let emoji: String
+    let title: String
+    let story: String
+    
+    var body: some View {
+        VStack(spacing: AppTheme.Spacing.medium) {
+            Text(emoji)
+                .font(.system(size: 80))
+            
+            Text(title)
+                .font(.custom("Noteworthy-Bold", size: 28))
+                .foregroundColor(Color(red: 0.2, green: 0.2, blue: 0.2))
+                .multilineTextAlignment(.center)
+            
+            Text(story)
+                .font(.custom("Noteworthy-Bold", size: 18))
+                .foregroundColor(Color(red: 0.3, green: 0.3, blue: 0.3))
+                .multilineTextAlignment(.center)
+                .lineSpacing(4)
+        }
+        .padding(AppTheme.Spacing.extraLarge)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.CornerRadius.large)
+                .fill(
+                    LinearGradient(
+                        colors: [Color.orange.opacity(0.2), Color.red.opacity(0.2)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+        )
+    }
+}
+
+// MARK: - Safety Tip Section
+struct SafetyTipSection: View {
+    let tip: SafetyTip
+    @ObservedObject var viewModel: SafetyTipsViewModel
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.medium) {
+            HStack(spacing: AppTheme.Spacing.medium) {
+                Image(systemName: tip.icon)
+                    .font(.system(size: 30))
+                    .foregroundColor(AppTheme.Colors.accent)
+                
+                Text(tip.title)
+                    .font(.custom("Noteworthy-Bold", size: 22))
+                    .foregroundColor(Color(red: 0.2, green: 0.2, blue: 0.2))
+            }
+            
+            Text(tip.description)
+                .font(.custom("Noteworthy-Bold", size: 17))
+                .foregroundColor(Color(red: 0.3, green: 0.3, blue: 0.3))
+                .fixedSize(horizontal: false, vertical: true)
+            
+            // Micro story box
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.small) {
+                HStack {
+                    Text("📖")
+                        .font(.system(size: 20))
+                    Text("Story Time!")
+                        .font(.custom("Noteworthy-Bold", size: 18))
+                        .foregroundColor(Color(red: 0.2, green: 0.2, blue: 0.2))
+                }
+                
+                Text(tip.microStory)
+                    .font(.custom("Noteworthy-Bold", size: 15))
+                    .foregroundColor(Color(red: 0.4, green: 0.4, blue: 0.4))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(AppTheme.Spacing.medium)
+            .background(
+                RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
+                    .fill(Color.orange.opacity(0.1))
+            )
+            
+            // Interactive fact card
+            InteractiveFactCardView(
+                title: "Did You Know?",
+                emoji: "💡",
+                fact: tip.funFact,
+                isRevealed: viewModel.revealedFacts.contains(tip.id),
+                onTap: {
+                    viewModel.toggleFactReveal(tip.id)
+                }
+            )
+        }
+        .padding(AppTheme.Spacing.large)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
+                .fill(Color.white)
+                .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+        )
+    }
+}
+
+// MARK: - Safety Gear Checklist Item
+struct SafetyGearChecklistItem: View {
+    let gear: SafetyGearItem
+    let isSelected: Bool
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: AppTheme.Spacing.medium) {
+                ZStack {
+                    Circle()
+                        .fill(isSelected ? Color.green : Color.gray.opacity(0.2))
+                        .frame(width: 30, height: 30)
+                    
+                    if isSelected {
+                        Image(systemName: "checkmark")
+                            .foregroundColor(.white)
+                            .font(.system(size: 16, weight: .bold))
+                    }
+                }
+                
+                Text(gear.emoji)
+                    .font(.system(size: 30))
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(gear.name)
+                        .font(.custom("Noteworthy-Bold", size: 18))
+                        .foregroundColor(Color(red: 0.2, green: 0.2, blue: 0.2))
+                    
+                    Text(gear.description)
+                        .font(.custom("Noteworthy-Bold", size: 14))
+                        .foregroundColor(Color(red: 0.4, green: 0.4, blue: 0.4))
+                }
+                
+                Spacer()
+            }
+            .padding(AppTheme.Spacing.medium)
+            .background(
+                RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
+                    .fill(isSelected ? Color.green.opacity(0.1) : Color.gray.opacity(0.05))
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+        .animation(.spring(response: 0.3), value: isSelected)
+    }
+}
+
+#Preview {
+    DetailView6(viewModel: PageViewModel(), pageId: 6)
+}
+

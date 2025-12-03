@@ -65,6 +65,8 @@ struct PageItemView: View {
         case 3: DetailView3(viewModel: viewModel, pageId: id)
         case 4: DetailView4(viewModel: viewModel, pageId: id)
         case 5: DetailView5(viewModel: viewModel, pageId: id)
+        case 6: DetailView6(viewModel: viewModel, pageId: id)
+        case 7: DetailView7(viewModel: viewModel, pageId: id)
         default: Text("Page Not Found")
         }
     }

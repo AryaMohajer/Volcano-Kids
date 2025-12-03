@@ -1,9 +1,10 @@
 import SwiftUI
 
-struct DetailView2: View {
+/// Volcano Rocks & Minerals Page
+struct DetailView7: View {
     @ObservedObject var viewModel: PageViewModel
     let pageId: Int
-    @StateObject private var introViewModel = VolcanoIntroViewModel()
+    @StateObject private var rocksViewModel = RocksViewModel()
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
@@ -19,7 +20,7 @@ struct DetailView2: View {
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
-                        .ignoresSafeArea()
+            .ignoresSafeArea()
             
             VStack(spacing: 0) {
                 // Header with back button (only one)
@@ -28,12 +29,12 @@ struct DetailView2: View {
                         presentationMode.wrappedValue.dismiss()
                     }) {
                         HStack(spacing: 4) {
-                        Image(systemName: "chevron.left")
+                            Image(systemName: "chevron.left")
                                 .font(.system(size: 18, weight: .semibold))
                             Text("Back")
                                 .font(.custom("Noteworthy-Bold", size: 17))
                         }
-                            .foregroundColor(.white)
+                        .foregroundColor(.white)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
                     }
@@ -47,16 +48,18 @@ struct DetailView2: View {
                 educationalSection
             }
         }
+        .navigationBarTitle("", displayMode: .inline)
+        .navigationBarHidden(true)
         .navigationBarBackButtonHidden(true)
     }
     
-    // MARK: - Educational Section
+    // MARK: - Educational Section (Redesigned to match Parts of Volcano)
     private var educationalSection: some View {
         VStack(spacing: 0) {
             // Step indicator - centered
             HStack {
                 Spacer()
-                Text("Step \(introViewModel.currentStep + 1) of \(introViewModel.totalSteps)")
+                Text("Step \(rocksViewModel.currentStep + 1) of \(rocksViewModel.totalSteps)")
                     .font(.custom("Noteworthy-Bold", size: 18))
                     .foregroundColor(.white.opacity(0.9))
                     .padding(.horizontal, AppTheme.Spacing.medium)
@@ -72,72 +75,31 @@ struct DetailView2: View {
             
             // Progress dots
             HStack(spacing: 8) {
-                ForEach(0..<introViewModel.totalSteps, id: \.self) { index in
+                ForEach(0..<rocksViewModel.totalSteps, id: \.self) { index in
                     Circle()
-                        .fill(index <= introViewModel.currentStep ? Color.yellow : Color.white.opacity(0.3))
+                        .fill(index <= rocksViewModel.currentStep ? Color.yellow : Color.white.opacity(0.3))
                         .frame(width: 10, height: 10)
-                        .scaleEffect(index == introViewModel.currentStep ? 1.3 : 1.0)
-                        .animation(.spring(response: 0.3), value: introViewModel.currentStep)
+                        .scaleEffect(index == rocksViewModel.currentStep ? 1.3 : 1.0)
+                        .animation(.spring(response: 0.3), value: rocksViewModel.currentStep)
                 }
             }
             .padding(.vertical, AppTheme.Spacing.small)
             
             // Main content area with pagination
-            TabView(selection: $introViewModel.currentStep) {
-                ForEach(0..<introViewModel.totalSteps, id: \.self) { step in
+            TabView(selection: $rocksViewModel.currentStep) {
+                ForEach(0..<rocksViewModel.totalSteps, id: \.self) { step in
                     ScrollView {
                         VStack(spacing: AppTheme.Spacing.large) {
                             // Title
-                            Text("What is Volcano?")
+                            Text("Volcano Rocks")
                                 .font(.custom("Noteworthy-Bold", size: 38))
                                 .foregroundColor(.white)
                                 .shadow(color: .black, radius: 10)
                                 .padding(.top, AppTheme.Spacing.medium)
                             
-                            // Current stage card (reusing VolcanoPartCardView style)
-                            VStack(spacing: AppTheme.Spacing.medium) {
-                                Text(introViewModel.introStages[step].emoji)
-                                    .font(.system(size: 100))
-                                
-                                Text(introViewModel.introStages[step].title)
-                                    .font(AppTheme.Typography.pageTitleFont)
-                                    .foregroundColor(AppTheme.Colors.textPrimary)
-                                    .shadow(color: .black.opacity(0.5), radius: 5)
-                                
-                                Text(introViewModel.introStages[step].description)
-                                    .font(AppTheme.Typography.bodyFont)
-                                    .foregroundColor(AppTheme.Colors.textSecondary)
-                                    .multilineTextAlignment(.center)
-                            }
-                            .padding(AppTheme.Spacing.extraLarge)
-                            .frame(maxWidth: .infinity)
-                            .background(
-                                RoundedRectangle(cornerRadius: AppTheme.CornerRadius.card)
-                                    .fill(
-                                        LinearGradient(
-                                            colors: [
-                                                introViewModel.introStages[step].color.opacity(0.4),
-                                                introViewModel.introStages[step].color.opacity(0.2),
-                                                Color.black.opacity(0.3)
-                                            ],
-                                            startPoint: .topLeading,
-                                            endPoint: .bottomTrailing
-                                        )
-                                    )
-                                    .shadow(color: introViewModel.introStages[step].color.opacity(0.5), radius: 20, x: 0, y: 10)
-                            )
-                            .overlay(
-                                RoundedRectangle(cornerRadius: AppTheme.CornerRadius.card)
-                                    .stroke(
-                                        LinearGradient(
-                                            colors: [introViewModel.introStages[step].color, introViewModel.introStages[step].color.opacity(0.3)],
-                                            startPoint: .topLeading,
-                                            endPoint: .bottomTrailing
-                                        ),
-                                        lineWidth: 3
-                                    )
-                            )
-                            .padding(.horizontal)
+                            // Current rock card
+                            RockCardView(rock: rocksViewModel.rocks[step], viewModel: rocksViewModel)
+                                .padding(.horizontal)
                             
                             // Fun fact flip card
                             VStack(spacing: AppTheme.Spacing.medium) {
@@ -146,36 +108,36 @@ struct DetailView2: View {
                                     .foregroundColor(.yellow)
                                 
                                 FlipFactCardView(
-                                    fact: introViewModel.introStages[step].funFact,
-                                    emoji: introViewModel.introStages[step].emoji
+                                    fact: rocksViewModel.rocks[step].funFact,
+                                    emoji: rocksViewModel.rocks[step].emoji
                                 )
                             }
                             .padding(.horizontal)
                             
-                            // Mini Quiz - different question for each step
-                            let currentQuestion = introViewModel.getQuizQuestion(for: step)
+                            // Mini Quiz - different question for each rock
+                            let currentQuestion = rocksViewModel.getQuizQuestion(for: step)
                             MiniQuizBlockView(
                                 question: currentQuestion.question,
                                 options: currentQuestion.options,
                                 correctAnswer: currentQuestion.correctAnswer,
                                 selectedAnswer: Binding(
-                                    get: { introViewModel.currentQuizAnswer },
+                                    get: { rocksViewModel.currentQuizAnswer },
                                     set: { _ in }
                                 ),
-                                showResult: $introViewModel.showQuizResult,
-                                isCorrect: $introViewModel.isQuizCorrect,
+                                showResult: $rocksViewModel.showQuizResult,
+                                isCorrect: $rocksViewModel.isQuizCorrect,
                                 onAnswerSelected: { index in
-                                    introViewModel.checkQuizAnswer(index, for: currentQuestion)
+                                    rocksViewModel.checkQuizAnswer(index, for: currentQuestion)
                                 }
                             )
                             .padding(.horizontal)
                             
                             // Next button (only show if not last step)
-                            if !introViewModel.isLastStep {
+                            if !rocksViewModel.isLastStep {
                                 HStack {
                                     Spacer()
                                     Button(action: {
-                                        introViewModel.nextStep()
+                                        rocksViewModel.nextStep()
                                     }) {
                                         HStack {
                                             Text("Next Adventure")
@@ -214,6 +176,112 @@ struct DetailView2: View {
     }
 }
 
-#Preview {
-    DetailView2(viewModel: PageViewModel(), pageId: 2)
+// MARK: - Rock Section
+struct RockSection: View {
+    let rock: VolcanoRock
+    @ObservedObject var viewModel: RocksViewModel
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.medium) {
+            HStack(spacing: AppTheme.Spacing.medium) {
+                Text(rock.emoji)
+                    .font(.system(size: 50))
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(rock.name)
+                        .font(.custom("Noteworthy-Bold", size: 24))
+                        .foregroundColor(Color(red: 0.2, green: 0.2, blue: 0.2))
+                    
+                    Text(rock.description)
+                        .font(.custom("Noteworthy-Bold", size: 17))
+                        .foregroundColor(Color(red: 0.3, green: 0.3, blue: 0.3))
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            
+            // Micro story box
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.small) {
+                HStack {
+                    Text("📖")
+                        .font(.system(size: 20))
+                    Text("Story Time!")
+                        .font(.custom("Noteworthy-Bold", size: 18))
+                        .foregroundColor(Color(red: 0.2, green: 0.2, blue: 0.2))
+                }
+                
+                Text(rock.microStory)
+                    .font(.custom("Noteworthy-Bold", size: 15))
+                    .foregroundColor(Color(red: 0.4, green: 0.4, blue: 0.4))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(AppTheme.Spacing.medium)
+            .background(
+                RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
+                    .fill(rock.color.opacity(0.1))
+            )
+            
+            // Interactive fact card
+            InteractiveFactCardView(
+                title: "Did You Know?",
+                emoji: "💡",
+                fact: rock.funFact,
+                isRevealed: viewModel.revealedFacts.contains(rock.id),
+                onTap: {
+                    viewModel.toggleFactReveal(rock.id)
+                }
+            )
+        }
+        .padding(AppTheme.Spacing.large)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
+                .fill(Color.white)
+                .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+        )
+    }
 }
+
+// MARK: - Mineral Card
+struct MineralCard: View {
+    let mineral: VolcanoMineral
+    
+    var body: some View {
+        HStack(spacing: AppTheme.Spacing.medium) {
+            Text(mineral.emoji)
+                .font(.system(size: 50))
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(mineral.name)
+                    .font(.custom("Noteworthy-Bold", size: 20))
+                    .foregroundColor(Color(red: 0.2, green: 0.2, blue: 0.2))
+                
+                Text(mineral.description)
+                    .font(.custom("Noteworthy-Bold", size: 16))
+                    .foregroundColor(Color(red: 0.3, green: 0.3, blue: 0.3))
+                    .fixedSize(horizontal: false, vertical: true)
+                
+                // Fun fact
+                HStack {
+                    Text("💡")
+                        .font(.system(size: 16))
+                    Text(mineral.funFact)
+                        .font(.custom("Noteworthy-Bold", size: 14))
+                        .foregroundColor(Color(red: 0.4, green: 0.4, blue: 0.4))
+                        .italic()
+                }
+                .padding(.top, 4)
+            }
+            
+            Spacer()
+        }
+        .padding(AppTheme.Spacing.medium)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
+                .fill(mineral.color.opacity(0.1))
+        )
+    }
+}
+
+#Preview {
+    DetailView7(viewModel: PageViewModel(), pageId: 7)
+}
+

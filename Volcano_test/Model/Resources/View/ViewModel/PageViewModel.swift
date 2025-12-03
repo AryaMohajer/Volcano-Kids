@@ -10,12 +10,15 @@ class PageViewModel: ObservableObject {
     
     private func loadPages() {
         // For testing: unlock all pages by default
+        // Reordered: What Is Volcano? first, then Parts Of A Volcano, then History Of Earth
         pages = [
-            PageModel(id: 1, title: "History Of Earth", isUnlocked: true),
             PageModel(id: 2, title: "What Is Volcano?", isUnlocked: true),
             PageModel(id: 3, title: "Parts Of A Volcano", isUnlocked: true),
+            PageModel(id: 1, title: "History Of Earth", isUnlocked: true),
             PageModel(id: 4, title: "Types Of Volcanoes", isUnlocked: true),
-            PageModel(id: 5, title: "Famous Volcanoes", isUnlocked: true)
+            PageModel(id: 5, title: "Famous Volcanoes", isUnlocked: true),
+            PageModel(id: 6, title: "Volcano Safety Tips", isUnlocked: true),
+            PageModel(id: 7, title: "Volcano Rocks & Minerals", isUnlocked: true)
         ]
         
         // Unlock all pages in persistence for testing

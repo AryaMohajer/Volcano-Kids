@@ -3,196 +3,177 @@ import SwiftUI
 struct DetailView5: View {
     @ObservedObject var viewModel: PageViewModel
     let pageId: Int
+    @StateObject private var famousViewModel = FamousVolcanoesViewModel()
     @Environment(\.presentationMode) var presentationMode
-    
+
     var body: some View {
         ZStack {
-            // Red background
-            AppTheme.Colors.primaryBackground
-                .ignoresSafeArea()
+            // Beautiful gradient background
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    Color(red: 0.1, green: 0.0, blue: 0.2),
+                    Color(red: 0.3, green: 0.0, blue: 0.1),
+                    AppTheme.Colors.primaryBackground,
+                    AppTheme.Colors.accent.opacity(0.8)
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // Title
-                Text("World Tour of Hot Spots!")
-                    .font(.custom("Noteworthy-Bold", size: 36))
-                    .foregroundColor(.white)
-                    .shadow(radius: 5)
-                    .padding(.top, 20)
-                    .padding(.bottom, 15)
-                
-                // Large white content card
-                ScrollView {
-                    VStack(spacing: 0) {
-                        // Main illustration at top
-                        WorldMapIllustration()
-                            .padding(.top, 20)
-                            .padding(.bottom, 25)
-                        
-                        // Three famous volcanoes
-                        FamousVolcanoSection(
-                            flag: "🇯🇵",
-                            title: "Mount Fuji",
-                            location: "Japan",
-                            description: "Mount Fuji is Japan's tallest and most famous volcano! It's a perfect cone shape and is considered sacred. It last erupted in 1707, but it's still an active volcano!",
-                            funFact: "Mount Fuji is a UNESCO World Heritage Site and is featured in many Japanese artworks!",
-                            height: "3,776 meters"
-                        )
-                        
-                        Divider()
-                            .padding(.vertical, 15)
-                        
-                        FamousVolcanoSection(
-                            flag: "🇮🇹",
-                            title: "Mount Vesuvius",
-                            location: "Italy",
-                            description: "Mount Vesuvius is famous for destroying the ancient city of Pompeii in 79 AD! It's one of the most dangerous volcanoes in the world because millions of people live nearby.",
-                            funFact: "Mount Vesuvius is the only active volcano on mainland Europe!",
-                            height: "1,281 meters"
-                        )
-                        
-                        Divider()
-                            .padding(.vertical, 15)
-                        
-                        FamousVolcanoSection(
-                            flag: "🇺🇸",
-                            title: "Kīlauea",
-                            location: "Hawaii, USA",
-                            description: "Kīlauea is one of the most active volcanoes in the world! It's a shield volcano that creates beautiful, slow-moving lava flows. People can safely watch the lava flow!",
-                            funFact: "Kīlauea has been erupting almost continuously since 1983!",
-                            height: "1,247 meters"
-                        )
-                        
-                        Spacer()
-                            .frame(height: 30)
+                // Header with back button (only one)
+                HStack {
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 18, weight: .semibold))
+                            Text("Back")
+                                .font(.custom("Noteworthy-Bold", size: 17))
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
                     }
-                    .padding(.horizontal, 20)
+
+            Spacer()
                 }
-                .background(
-                    RoundedRectangle(cornerRadius: 30)
-                        .fill(Color.white)
-                        .shadow(radius: 10)
-                )
-                .padding(.horizontal, 15)
-                .padding(.bottom, 20)
+                .padding(.horizontal, AppTheme.Spacing.medium)
+                .padding(.top, AppTheme.Spacing.small)
+                
+                // Educational Section with pagination
+                educationalSection
             }
         }
         .navigationBarBackButtonHidden(true)
     }
-}
-
-// MARK: - World Map Illustration
-struct WorldMapIllustration: View {
-    var body: some View {
-        VStack(spacing: 15) {
-            Text("Famous Volcanoes Around the World")
-                .font(.custom("Noteworthy-Bold", size: 24))
-                .foregroundColor(Color(red: 0.2, green: 0.2, blue: 0.2))
-            
-            // Simple world map representation
-            HStack(spacing: 30) {
-                // Japan
-                VStack(spacing: 5) {
-                    Text("🇯🇵")
-                        .font(.system(size: 40))
-                    Text("Japan")
-                        .font(.custom("Noteworthy-Bold", size: 16))
-                        .foregroundColor(Color(red: 0.3, green: 0.3, blue: 0.3))
-                }
-                
-                // Italy
-                VStack(spacing: 5) {
-                    Text("🇮🇹")
-                        .font(.system(size: 40))
-                    Text("Italy")
-                        .font(.custom("Noteworthy-Bold", size: 16))
-                        .foregroundColor(Color(red: 0.3, green: 0.3, blue: 0.3))
-                }
-                
-                // Hawaii
-                VStack(spacing: 5) {
-                    Text("🇺🇸")
-                        .font(.system(size: 40))
-                    Text("Hawaii")
-                        .font(.custom("Noteworthy-Bold", size: 16))
-                        .foregroundColor(Color(red: 0.3, green: 0.3, blue: 0.3))
-                }
-            }
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 15)
-                    .fill(Color(red: 0.95, green: 0.95, blue: 0.95))
-            )
-        }
-    }
-}
-
-// MARK: - Famous Volcano Section
-struct FamousVolcanoSection: View {
-    let flag: String
-    let title: String
-    let location: String
-    let description: String
-    let funFact: String
-    let height: String
     
-    var body: some View {
-        VStack(alignment: .leading, spacing: 15) {
-            // Header with flag
-            HStack(spacing: 12) {
-                Text(flag)
-                    .font(.system(size: 40))
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(title)
-                        .font(.custom("Noteworthy-Bold", size: 28))
-                        .foregroundColor(Color(red: 0.2, green: 0.2, blue: 0.2))
-                    
-                    Text(location)
-                        .font(.system(size: 18, weight: .medium))
-                        .foregroundColor(Color(red: 0.4, green: 0.4, blue: 0.4))
-                }
+    // MARK: - Educational Section
+    private var educationalSection: some View {
+        VStack(spacing: 0) {
+            // Step indicator - centered
+            HStack {
+                Spacer()
+                Text("Step \(famousViewModel.currentStep + 1) of \(famousViewModel.totalSteps)")
+                    .font(.custom("Noteworthy-Bold", size: 18))
+                    .foregroundColor(.white.opacity(0.9))
+                    .padding(.horizontal, AppTheme.Spacing.medium)
+                    .padding(.vertical, AppTheme.Spacing.small)
+                    .background(
+                        Capsule()
+                            .fill(Color.black.opacity(0.3))
+                    )
+                Spacer()
             }
+            .padding(.horizontal)
+            .padding(.top, AppTheme.Spacing.small)
             
-            // Description
-            Text(description)
-                .font(.system(size: 18, weight: .regular))
-                .foregroundColor(Color(red: 0.3, green: 0.3, blue: 0.3))
-                .lineSpacing(4)
-                .fixedSize(horizontal: false, vertical: true)
-            
-            // "Did You Know?" Box
-            HStack(alignment: .top, spacing: 10) {
-                Text("💡")
-                    .font(.system(size: 24))
-                
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("Did You Know?")
-                        .font(.custom("Noteworthy-Bold", size: 20))
-                        .foregroundColor(Color(red: 0.2, green: 0.2, blue: 0.2))
-                    
-                    Text(funFact)
-                        .font(.system(size: 18, weight: .regular))
-                        .foregroundColor(Color(red: 0.3, green: 0.3, blue: 0.3))
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-            }
-            .padding(15)
-            .background(
-                RoundedRectangle(cornerRadius: 15)
-                    .fill(Color(red: 1.0, green: 0.95, blue: 0.8))
-            )
-            
-            // Height info
+            // Progress dots
             HStack(spacing: 8) {
-                Text("📏")
-                    .font(.system(size: 18))
-                Text("Height: \(height)")
-                    .font(.system(size: 18, weight: .medium))
-                    .foregroundColor(Color(red: 0.4, green: 0.2, blue: 0.0))
+                ForEach(0..<famousViewModel.totalSteps, id: \.self) { index in
+                    Circle()
+                        .fill(index <= famousViewModel.currentStep ? Color.yellow : Color.white.opacity(0.3))
+                        .frame(width: 10, height: 10)
+                        .scaleEffect(index == famousViewModel.currentStep ? 1.3 : 1.0)
+                        .animation(.spring(response: 0.3), value: famousViewModel.currentStep)
+                }
             }
-            .padding(.top, 5)
+            .padding(.vertical, AppTheme.Spacing.small)
+            
+            // Main content area with pagination
+            TabView(selection: $famousViewModel.currentStep) {
+                ForEach(0..<famousViewModel.totalSteps, id: \.self) { step in
+                    ScrollView {
+                        VStack(spacing: AppTheme.Spacing.large) {
+                            // Title
+                            Text("Famous Volcanoes")
+                                .font(.custom("Noteworthy-Bold", size: 38))
+                                .foregroundColor(.white)
+                                .shadow(color: .black, radius: 10)
+                                .padding(.top, AppTheme.Spacing.medium)
+                            
+                            // Current volcano card
+                            FamousVolcanoCardView(
+                                volcano: famousViewModel.famousVolcanoes[step],
+                                stepNumber: step + 1,
+                                totalSteps: famousViewModel.totalSteps
+                            )
+                            .padding(.horizontal)
+                            
+                            // Fun fact flip card
+                            VStack(spacing: AppTheme.Spacing.medium) {
+                                Text("💡 Fun Fact!")
+                                    .font(.custom("Noteworthy-Bold", size: 22))
+                                    .foregroundColor(.yellow)
+                                
+                                FlipFactCardView(
+                                    fact: famousViewModel.famousVolcanoes[step].funFact,
+                                    emoji: famousViewModel.famousVolcanoes[step].flag
+                                )
+                            }
+                            .padding(.horizontal)
+                            
+                            // Mini Quiz - different question for each volcano
+                            let currentQuestion = famousViewModel.getQuizQuestion(for: step)
+                            MiniQuizBlockView(
+                                question: currentQuestion.question,
+                                options: currentQuestion.options,
+                                correctAnswer: currentQuestion.correctAnswer,
+                                selectedAnswer: Binding(
+                                    get: { famousViewModel.currentQuizAnswer },
+                                    set: { _ in }
+                                ),
+                                showResult: $famousViewModel.showQuizResult,
+                                isCorrect: $famousViewModel.isQuizCorrect,
+                                onAnswerSelected: { index in
+                                    famousViewModel.checkQuizAnswer(index, for: currentQuestion)
+                                }
+                            )
+                            .padding(.horizontal)
+                            
+                            // Next button (only show if not last step)
+                            if !famousViewModel.isLastStep {
+                                HStack {
+                                    Spacer()
+                                    Button(action: {
+                                        famousViewModel.nextStep()
+                                    }) {
+                                        HStack {
+                                            Text("Next Adventure")
+                                            Image(systemName: "chevron.right")
+                                        }
+                                        .font(.custom("Noteworthy-Bold", size: 18))
+                                        .foregroundColor(.white)
+                                        .padding(.horizontal, AppTheme.Spacing.large)
+                                        .padding(.vertical, AppTheme.Spacing.medium)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
+                                                .fill(
+                                                    LinearGradient(
+                                                        colors: [.orange, .red],
+                                                        startPoint: .leading,
+                                                        endPoint: .trailing
+                                                    )
+                                                )
+                                        )
+                                    }
+                                    Spacer()
+                                }
+                                .padding(.horizontal)
+                                .padding(.bottom, AppTheme.Spacing.extraLarge)
+                            } else {
+                                Spacer()
+                                    .frame(height: AppTheme.Spacing.extraLarge)
+                            }
+                        }
+                    }
+                    .tag(step)
+                }
+            }
+            .tabViewStyle(.page(indexDisplayMode: .never))
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

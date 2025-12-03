@@ -123,8 +123,9 @@ struct DetailView3: View {
     // MARK: - Educational Section (Redesigned)
     private var educationalSection: some View {
         VStack(spacing: 0) {
-            // Step indicator
+            // Step indicator - centered
             HStack {
+                Spacer()
                 Text("Step \(partsViewModel.currentStep + 1) of \(partsViewModel.totalSteps)")
                     .font(.custom("Noteworthy-Bold", size: 18))
                     .foregroundColor(.white.opacity(0.9))
@@ -134,7 +135,6 @@ struct DetailView3: View {
                         Capsule()
                             .fill(Color.black.opacity(0.3))
                     )
-                
                 Spacer()
             }
             .padding(.horizontal)
@@ -197,32 +197,10 @@ struct DetailView3: View {
                                 .padding(.horizontal)
                             }
                             
-                            // Navigation buttons
-                            HStack(spacing: AppTheme.Spacing.medium) {
-                                // Previous button
-                                if !partsViewModel.isFirstStep {
-                                    Button(action: {
-                                        partsViewModel.previousStep()
-                                    }) {
-                                        HStack {
-                                            Image(systemName: "chevron.left")
-                                            Text("Previous")
-                                        }
-                                        .font(.custom("Noteworthy-Bold", size: 18))
-                                        .foregroundColor(.white)
-                                        .padding(.horizontal, AppTheme.Spacing.large)
-                                        .padding(.vertical, AppTheme.Spacing.medium)
-                                        .background(
-                                            RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
-                                                .fill(Color.blue.opacity(0.7))
-                                        )
-                                    }
-                                }
-                                
-                                Spacer()
-                                
-                                // Next button
-                                if !partsViewModel.isLastStep {
+                            // Next button (only show if not last step)
+                            if !partsViewModel.isLastStep {
+                                HStack {
+                                    Spacer()
                                     Button(action: {
                                         partsViewModel.nextStep()
                                     }) {
@@ -245,45 +223,15 @@ struct DetailView3: View {
                                                 )
                                         )
                                     }
-                                } else {
-                                    // Last step - show quiz prompt
-                                    VStack(spacing: AppTheme.Spacing.medium) {
-                                        Text("🎉 You've learned all the parts! 🎉")
-                                            .font(.custom("Noteworthy-Bold", size: 22))
-                                            .foregroundColor(.yellow)
-                                            .multilineTextAlignment(.center)
-                                        
-                                        Button(action: {
-                                            withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
-                                                currentSection = 1
-                                            }
-                                        }) {
-                                            HStack {
-                                                Image(systemName: "brain.head.profile")
-                                                    .font(.system(size: 24))
-                                                Text("Take Quiz")
-                                                    .font(.custom("Noteworthy-Bold", size: 22))
-                                            }
-                                            .foregroundColor(.white)
-                                            .padding(.horizontal, AppTheme.Spacing.extraLarge)
-                                            .padding(.vertical, AppTheme.Spacing.medium)
-                                            .background(
-                                                RoundedRectangle(cornerRadius: AppTheme.CornerRadius.large)
-                                                    .fill(
-                                                        LinearGradient(
-                                                            colors: [.purple, .blue],
-                                                            startPoint: .leading,
-                                                            endPoint: .trailing
-                                                        )
-                                                    )
-                                                    .shadow(color: .purple, radius: 15)
-                                            )
-                                        }
-                                    }
+                                    Spacer()
                                 }
+                                .padding(.horizontal)
+                                .padding(.bottom, AppTheme.Spacing.extraLarge)
+                            } else {
+                                // Last step - just add spacing, no buttons or text
+                                Spacer()
+                                    .frame(height: AppTheme.Spacing.extraLarge)
                             }
-                            .padding(.horizontal)
-                            .padding(.bottom, AppTheme.Spacing.extraLarge)
                         }
                     }
                     .tag(step)
@@ -296,7 +244,7 @@ struct DetailView3: View {
     // MARK: - Quiz Section
     private var quizSection: some View {
         VStack(spacing: 0) {
-            // Header with back button
+            // Header with back button (only one)
             HStack {
                 Button(action: {
                     withAnimation {
@@ -304,22 +252,20 @@ struct DetailView3: View {
                         resetQuiz()
                     }
                 }) {
-                    HStack {
+                    HStack(spacing: 4) {
                         Image(systemName: "chevron.left")
+                            .font(.system(size: 18, weight: .semibold))
                         Text("Back")
+                            .font(.custom("Noteworthy-Bold", size: 17))
                     }
-                    .font(.custom("Noteworthy-Bold", size: 18))
                     .foregroundColor(.white)
-                    .padding(.horizontal, 15)
+                    .padding(.horizontal, 12)
                     .padding(.vertical, 8)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 15)
-                            .fill(Color.blue.opacity(0.7))
-                    )
                 }
                 Spacer()
             }
-            .padding()
+            .padding(.horizontal, AppTheme.Spacing.medium)
+            .padding(.top, AppTheme.Spacing.small)
             
             ScrollView {
                 VStack(spacing: 25) {
