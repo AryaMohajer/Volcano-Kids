@@ -9,20 +9,18 @@ class PageViewModel: ObservableObject {
     }
     
     private func loadPages() {
-        let unlockedPages = persistenceService.loadUnlockedPages()
-        
+        // For testing: unlock all pages by default
         pages = [
-            PageModel(id: 1, title: "History Of Earth", isUnlocked: unlockedPages.contains(1)),
-            PageModel(id: 2, title: "What Is Volcano?", isUnlocked: unlockedPages.contains(2)),
-            PageModel(id: 3, title: "Parts Of A Volcano", isUnlocked: unlockedPages.contains(3))
+            PageModel(id: 1, title: "History Of Earth", isUnlocked: true),
+            PageModel(id: 2, title: "What Is Volcano?", isUnlocked: true),
+            PageModel(id: 3, title: "Parts Of A Volcano", isUnlocked: true),
+            PageModel(id: 4, title: "Types Of Volcanoes", isUnlocked: true),
+            PageModel(id: 5, title: "Famous Volcanoes", isUnlocked: true)
         ]
         
-        // Ensure first page is always unlocked
-        if !unlockedPages.contains(1) {
-            persistenceService.unlockPage(1)
-            if let index = pages.firstIndex(where: { $0.id == 1 }) {
-                pages[index].isUnlocked = true
-            }
+        // Unlock all pages in persistence for testing
+        for page in pages {
+            persistenceService.unlockPage(page.id)
         }
     }
     

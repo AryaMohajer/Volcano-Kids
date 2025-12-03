@@ -17,21 +17,7 @@ struct PuzzleDetailView: View {
             )
             .ignoresSafeArea()
 
-            VStack {
-                HStack {
-                    Button(action: {
-                        presentationMode.wrappedValue.dismiss()
-                    }) {
-                        Image(systemName: "chevron.left.circle.fill")
-                            .font(.system(size: 40))
-                            .foregroundColor(.white)
-                            .shadow(color: .black, radius: 5)
-                    }
-                    Spacer()
-                }
-                .padding()
-                
-                ScrollView {
+            ScrollView {
                 VStack {
                     Image(puzzle.imageName)
                         .resizable()
@@ -64,7 +50,6 @@ struct PuzzleDetailView: View {
                     }
                 }
                 .padding()
-                }
             }
         }
         .navigationBarBackButtonHidden(true)

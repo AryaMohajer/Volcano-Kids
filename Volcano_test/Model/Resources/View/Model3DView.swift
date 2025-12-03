@@ -12,20 +12,6 @@ struct ModelView: View {
                 .ignoresSafeArea()
             
             VStack {
-                HStack {
-                    Button(action: {
-                        presentationMode.wrappedValue.dismiss()
-                    }) {
-                        Image(systemName: "chevron.left.circle.fill")
-                            .font(.system(size: 40))
-                            .foregroundColor(.white)
-                            .shadow(color: .black, radius: 5)
-                    }
-                    Spacer()
-                }
-                .padding(.leading, 20)
-                .padding(.top, 20)
-                
                 VStack {
                     SceneKitView(scene: viewModel.scene)
                         .background(Color.black)

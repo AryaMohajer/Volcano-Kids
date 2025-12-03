@@ -17,19 +17,6 @@ struct PuzzleListView: View {
                     .frame(width: 370, height: 750)
                 
                 VStack {
-                    HStack {
-                        Button(action: {
-                            presentationMode.wrappedValue.dismiss()
-                        }) {
-                            Image(systemName: "chevron.left.circle.fill")
-                                .font(.system(size: 40))
-                                .foregroundColor(.white)
-                                .shadow(color: .black, radius: 5)
-                        }
-                        Spacer()
-                    }
-                    .padding(.leading, AppTheme.Spacing.small)
-                    
                     Text("Amazing Volcanoes")
                         .font(AppTheme.Typography.pageTitleFont)
                         .foregroundColor(AppTheme.Colors.textPrimary)

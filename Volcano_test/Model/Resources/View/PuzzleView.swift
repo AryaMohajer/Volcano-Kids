@@ -26,20 +26,6 @@ struct PuzzleView: View {
             .ignoresSafeArea()
             
             VStack(spacing: 20) {
-                // Header with back button
-                HStack {
-                    Button(action: {
-                        presentationMode.wrappedValue.dismiss()
-                    }) {
-                        Image(systemName: "chevron.left.circle.fill")
-                            .font(.system(size: 40))
-                            .foregroundColor(.white)
-                            .shadow(color: .black, radius: 5)
-                    }
-                    Spacer()
-                }
-                .padding()
-                
                 Text("Sliding Puzzle")
                     .font(.custom("Noteworthy-Bold", size: 36))
                     .foregroundColor(.white)
