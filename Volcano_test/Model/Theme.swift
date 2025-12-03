@@ -46,6 +46,7 @@ struct AppTheme {
         static let iconSize: CGFloat = 70
         static let puzzleTileSize: CGFloat = 80
         static let thumbnailSize: CGFloat = 80
+        static let detailIconSize: CGFloat = 280  // Equal-sized icon for detail view
     }
     
     // MARK: - Corner Radius

@@ -18,12 +18,19 @@ struct PuzzleDetailView: View {
             .ignoresSafeArea()
 
             ScrollView {
-                VStack {
+                VStack(spacing: AppTheme.Spacing.large) {
+                    // Equal-sized icon with consistent styling
                     Image(puzzle.imageName)
                         .resizable()
-                        .scaledToFit()
-                        .frame(height: 300)
-                        .padding()
+                        .scaledToFill()
+                        .frame(width: AppTheme.Sizes.detailIconSize, height: AppTheme.Sizes.detailIconSize)
+                        .clipShape(RoundedRectangle(cornerRadius: AppTheme.CornerRadius.large))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: AppTheme.CornerRadius.large)
+                                .stroke(Color.white.opacity(0.4), lineWidth: 3)
+                        )
+                        .shadow(color: Color.black.opacity(0.3), radius: 10, x: 0, y: 5)
+                        .padding(.top, AppTheme.Spacing.medium)
 
                     Text(puzzle.title)
                         .foregroundColor(AppTheme.Colors.textPrimary)

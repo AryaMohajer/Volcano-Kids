@@ -4,14 +4,20 @@ struct PuzzleRowView: View {
     let puzzle: PuzzleItem
 
     var body: some View {
-        HStack {
+        HStack(spacing: AppTheme.Spacing.medium) {
+            // Equal-sized icon with consistent styling
             Image(puzzle.imageName)
                 .resizable()
-                .scaledToFit()
+                .scaledToFill()
                 .frame(width: AppTheme.Sizes.thumbnailSize, height: AppTheme.Sizes.thumbnailSize)
-                .cornerRadius(AppTheme.CornerRadius.small)
+                .clipShape(RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium))
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
+                        .stroke(Color.white.opacity(0.3), lineWidth: 2)
+                )
+                .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 2)
 
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(puzzle.title)
                     .font(AppTheme.Typography.headlineFont)
                     .foregroundColor(AppTheme.Colors.textPrimary)
@@ -20,6 +26,7 @@ struct PuzzleRowView: View {
                     .foregroundColor(AppTheme.Colors.textSecondary)
             }
         }
+        .padding(.vertical, AppTheme.Spacing.small)
     }
 }
 
