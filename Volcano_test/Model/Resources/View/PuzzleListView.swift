@@ -8,41 +8,72 @@ struct PuzzleListView: View {
     var body: some View {
         NavigationView {
             ZStack {
+                // Background
                 AppTheme.Colors.primaryBackground
                     .ignoresSafeArea()
-                Rectangle()
-                    .fill(Color.black.opacity(0.1))
-                    .cornerRadius(AppTheme.CornerRadius.medium)
-                    .shadow(radius: AppTheme.Shadows.small)
-                    .frame(width: 370, height: 750)
                 
-                VStack {
-                    Text("Amazing Volcanoes")
-                        .font(AppTheme.Typography.pageTitleFont)
-                        .foregroundColor(AppTheme.Colors.textPrimary)
-                        .padding(.top, AppTheme.Spacing.medium)
-                    
+                // Content container
+                VStack(spacing: 0) {
+                    // Top safe area spacing
                     Spacer()
+                        .frame(height: 8)
                     
-                    // List of Volcanoes
-                    List(viewModel.puzzleItems) { puzzle in
-                        NavigationLink(destination: PuzzleDetailView(puzzle: puzzle)) {
-                            PuzzleRowView(puzzle: puzzle)
+                    // Header with white back button - properly styled
+                    HStack(alignment: .center) {
+                        Button(action: {
+                            presentationMode.wrappedValue.dismiss()
+                        }) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "chevron.left")
+                                    .font(.system(size: 18, weight: .semibold))
+                                Text("Back")
+                                    .font(.custom("Noteworthy-Bold", size: 17))
+                            }
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
                         }
-                        .listRowBackground(Color.clear) // Makes row background transparent
+                        .buttonStyle(PlainButtonStyle())
+                        
+                        Spacer()
                     }
-                    .listStyle(PlainListStyle()) // Removes default styling
-                    .scrollContentBackground(.hidden) // Hides default white background
-                    .frame(maxHeight: 450) // Controls list expansion
+                    .padding(.horizontal, AppTheme.Spacing.medium)
+                    .padding(.top, 8)
                     
+                    // Title with optimal spacing
+                    Text("Amazing Volcanoes")
+                        .font(.custom("Noteworthy-Bold", size: 32))
+                        .foregroundColor(.white)
+                        .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 2)
+                        .padding(.top, AppTheme.Spacing.large)
+                        .padding(.bottom, AppTheme.Spacing.medium)
+                    
+                    // List of Volcanoes - Optimized spacing for perfect fit
+                    VStack(spacing: 10) {
+                        ForEach(viewModel.puzzleItems) { puzzle in
+                            NavigationLink(destination: PuzzleDetailView(puzzle: puzzle)) {
+                                PuzzleRowView(puzzle: puzzle)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        }
+                    }
+                    .padding(.horizontal, AppTheme.Spacing.large)
+                    .padding(.top, AppTheme.Spacing.medium)
+                    
+                    // Flexible spacer to push footer down
                     Spacer()
                     
+                    // Footer text with proper spacing
                     WritingMoodView()
+                        .padding(.horizontal, AppTheme.Spacing.medium)
+                        .padding(.bottom, AppTheme.Spacing.medium)
                 }
-                .padding()
             }
+            .navigationBarTitle("", displayMode: .inline)
+            .navigationBarHidden(true)
             .navigationBarBackButtonHidden(true)
             .ignoresSafeArea()
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }

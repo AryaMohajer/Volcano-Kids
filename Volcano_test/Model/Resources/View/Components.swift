@@ -2,31 +2,63 @@ import SwiftUI
 
 struct PuzzleRowView: View {
     let puzzle: PuzzleItem
+    @State private var isPressed = false
 
     var body: some View {
-        HStack(spacing: AppTheme.Spacing.medium) {
-            // Circular icon with red border
-            Image(puzzle.imageName)
-                .resizable()
-                .scaledToFill()
-                .frame(width: AppTheme.Sizes.thumbnailSize, height: AppTheme.Sizes.thumbnailSize)
-                .clipShape(Circle())
-                .overlay(
-                    Circle()
-                        .stroke(AppTheme.Colors.primaryBackground, lineWidth: 3)
-                )
-                .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 2)
+        HStack(spacing: 12) {
+            // Circular icon with red border - optimized size
+            ZStack {
+                Circle()
+                    .fill(AppTheme.Colors.primaryBackground)
+                    .frame(width: 70, height: 70)
+                
+                Image(puzzle.imageName)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 70, height: 70)
+                    .clipShape(Circle())
+                    .overlay(
+                        Circle()
+                            .stroke(Color.white.opacity(0.3), lineWidth: 2)
+                    )
+            }
+            .shadow(color: Color.black.opacity(0.25), radius: 6, x: 0, y: 3)
 
+            // Text content
             VStack(alignment: .leading, spacing: 4) {
                 Text(puzzle.title)
-                    .font(AppTheme.Typography.headlineFont)
-                    .foregroundColor(AppTheme.Colors.textPrimary)
+                    .font(.custom("Noteworthy-Bold", size: 19))
+                    .foregroundColor(.white)
+                    .lineLimit(1)
+                
                 Text(puzzle.subtitle)
-                    .font(AppTheme.Typography.subheadlineFont)
-                    .foregroundColor(AppTheme.Colors.textSecondary)
+                    .font(.custom("Noteworthy-Bold", size: 15))
+                    .foregroundColor(.white.opacity(0.85))
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            
+            Spacer(minLength: 8)
+            
+            // Chevron indicator
+            Image(systemName: "chevron.right")
+                .foregroundColor(.white.opacity(0.6))
+                .font(.system(size: 14, weight: .semibold))
+        }
+        .padding(.vertical, 10)
+        .padding(.horizontal, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.white.opacity(isPressed ? 0.1 : 0.05))
+        )
+        .scaleEffect(isPressed ? 0.98 : 1.0)
+        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPressed)
+        .onTapGesture {
+            isPressed = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                isPressed = false
             }
         }
-        .padding(.vertical, AppTheme.Spacing.small)
     }
 }
 
