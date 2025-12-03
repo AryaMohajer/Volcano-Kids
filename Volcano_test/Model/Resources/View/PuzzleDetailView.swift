@@ -19,24 +19,18 @@ struct PuzzleDetailView: View {
 
             ScrollView {
                 VStack(spacing: AppTheme.Spacing.large) {
-                    // Equal-sized icon with consistent styling and red background
-                    ZStack {
-                        RoundedRectangle(cornerRadius: AppTheme.CornerRadius.large)
-                            .fill(AppTheme.Colors.primaryBackground)
-                            .frame(width: AppTheme.Sizes.detailIconSize, height: AppTheme.Sizes.detailIconSize)
-                        
-                        Image(puzzle.imageName)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: AppTheme.Sizes.detailIconSize, height: AppTheme.Sizes.detailIconSize)
-                            .clipShape(RoundedRectangle(cornerRadius: AppTheme.CornerRadius.large))
-                    }
-                    .overlay(
-                        RoundedRectangle(cornerRadius: AppTheme.CornerRadius.large)
-                            .stroke(Color.white.opacity(0.4), lineWidth: 3)
-                    )
-                    .shadow(color: Color.black.opacity(0.3), radius: 10, x: 0, y: 5)
-                    .padding(.top, AppTheme.Spacing.medium)
+                    // Circular icon with red border
+                    Image(puzzle.imageName)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: AppTheme.Sizes.detailIconSize, height: AppTheme.Sizes.detailIconSize)
+                        .clipShape(Circle())
+                        .overlay(
+                            Circle()
+                                .stroke(AppTheme.Colors.primaryBackground, lineWidth: 4)
+                        )
+                        .shadow(color: Color.black.opacity(0.3), radius: 10, x: 0, y: 5)
+                        .padding(.top, AppTheme.Spacing.medium)
 
                     Text(puzzle.title)
                         .foregroundColor(AppTheme.Colors.textPrimary)
