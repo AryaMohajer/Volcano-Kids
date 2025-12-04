@@ -409,7 +409,7 @@ struct DetailView8: View {
     
     // MARK: - Helper Functions
     private func openEmail() {
-        let email = "ariyamohajer321@gmail.com"
+        let email = "Kimiakarbin@gmail.com"
         if let url = URL(string: "mailto:\(email)") {
             UIApplication.shared.open(url)
         }
