@@ -5,7 +5,7 @@ import Foundation
 class ThemeManager: ObservableObject {
     static let shared = ThemeManager()
     
-    @Published var currentTheme: AppThemeType = .dark
+    @Published var currentTheme: AppThemeType = .default
     
     private let themeKey = "selectedTheme"
     
@@ -18,8 +18,8 @@ class ThemeManager: ObservableObject {
            let savedTheme = AppThemeType(rawValue: savedThemeRaw) {
             currentTheme = savedTheme
         } else {
-            // Default to dark mode if no saved theme
-            currentTheme = .dark
+            // Default to Volcano Red if no saved theme
+            currentTheme = .default
         }
     }
     

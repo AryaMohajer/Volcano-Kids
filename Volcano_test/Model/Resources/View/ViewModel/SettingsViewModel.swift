@@ -39,9 +39,9 @@ class SettingsViewModel: ObservableObject {
         persistenceService.resetProgress()
         // Reset all pages except the first one
         UserDefaults.standard.removeObject(forKey: AppConstants.UserDefaultsKeys.unlockedPages)
-        // Reset theme to dark mode (default theme)
-        ThemeManager.shared.setTheme(.dark)
-        selectedTheme = .dark
+        // Reset theme to Volcano Red (default theme)
+        ThemeManager.shared.setTheme(.default)
+        selectedTheme = .default
     }
     
     func getAppVersion() -> String {
