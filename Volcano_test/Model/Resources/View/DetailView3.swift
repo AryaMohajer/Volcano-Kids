@@ -27,29 +27,29 @@ struct DetailView3: View {
                     .ignoresSafeArea()
                 
                 VStack(spacing: 0) {
-                // Header
-                HStack {
-                    Button(action: {
-                        presentationMode.wrappedValue.dismiss()
-                    }) {
-                        HStack {
-                            Image(systemName: "chevron.left")
-                            Text("Back")
+                // Header (only show when in educational section)
+                if detailViewModel.currentSection == 0 {
+                    HStack {
+                        Button(action: {
+                            presentationMode.wrappedValue.dismiss()
+                        }) {
+                            HStack {
+                                Image(systemName: "chevron.left")
+                                Text("Back")
+                            }
+                            .font(.custom("Noteworthy-Bold", size: 18))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 15)
+                            .padding(.vertical, 8)
+                            .background(
+                                RoundedRectangle(cornerRadius: 15)
+                                    .fill(Color.blue.opacity(0.7))
+                            )
                         }
-                        .font(.custom("Noteworthy-Bold", size: 18))
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 15)
-                        .padding(.vertical, 8)
-                        .background(
-                            RoundedRectangle(cornerRadius: 15)
-                                .fill(Color.blue.opacity(0.7))
-                        )
-                    }
-                    
-                    Spacer()
-                    
-                    // Section toggle
-                    if detailViewModel.currentSection == 0 {
+                        
+                        Spacer()
+                        
+                        // Section toggle
                         Button(action: {
                             detailViewModel.switchToQuiz()
                         }) {
@@ -67,8 +67,8 @@ struct DetailView3: View {
                             )
                         }
                     }
+                    .padding()
                 }
-                .padding()
                 
                 if detailViewModel.currentSection == 0 {
                     // Educational Section

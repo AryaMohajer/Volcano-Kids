@@ -30,26 +30,26 @@ struct DetailView4: View {
             .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // Header
-                HStack {
-                    Button(action: {
-                        presentationMode.wrappedValue.dismiss()
-                    }) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "chevron.left")
-                                .font(.system(size: 18, weight: .semibold))
-                            Text("Back")
-                                .font(.custom("Noteworthy-Bold", size: 17))
+                // Header (only show when in educational section)
+                if detailViewModel.currentSection == 0 {
+                    HStack {
+                        Button(action: {
+                            presentationMode.wrappedValue.dismiss()
+                        }) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "chevron.left")
+                                    .font(.system(size: 18, weight: .semibold))
+                                Text("Back")
+                                    .font(.custom("Noteworthy-Bold", size: 17))
+                            }
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
                         }
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                    }
-                    
-                    Spacer()
-                    
-                    // Section toggle
-                    if detailViewModel.currentSection == 0 {
+                        
+                        Spacer()
+                        
+                        // Section toggle
                         Button(action: {
                             detailViewModel.switchToQuiz()
                         }) {
@@ -67,8 +67,8 @@ struct DetailView4: View {
                             )
                         }
                     }
+                    .padding()
                 }
-                .padding()
                 
                 if detailViewModel.currentSection == 0 {
                     // Educational Section
