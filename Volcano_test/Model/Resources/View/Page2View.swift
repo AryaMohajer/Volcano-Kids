@@ -1,25 +1,40 @@
 import SwiftUI
+
 struct MergedPageView: View {
     @StateObject private var viewModel = PageViewModel()
-
+    
     var body: some View {
-        NavigationStack {
-            ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack(spacing: 16) {
-                    ForEach(viewModel.pages) { page in
-                        PageItemView(page: page, viewModel: viewModel)
-                            .disabled(!page.isUnlocked)
-                    }
+        Group {
+            if #available(iOS 16.0, *) {
+                NavigationStack {
+                    scrollableContent
                 }
-                .padding(.horizontal, 16)
-                .scrollIndicators(.hidden)
-                .applyPagingIfAvailable()
+                .navigationBarBackButtonHidden(true)
+            } else {
+                NavigationView {
+                    scrollableContent
+                }
+                .navigationBarHidden(true)
             }
-            .frame(height: 400)
         }
-        .navigationBarBackButtonHidden(true)
+    }
+    
+    private var scrollableContent: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            LazyHStack(spacing: 16) {
+                ForEach(viewModel.pages) { page in
+                    PageItemView(page: page, viewModel: viewModel)
+                        .disabled(!page.isUnlocked)
+                }
+            }
+            .padding(.horizontal, 16)
+            .hideScrollIndicatorsIfAvailable()
+            .applyPagingIfAvailable()
+        }
+        .frame(height: 400)
     }
 }
+
 // ✅ Extension to conditionally apply paging if iOS 17 or later
 extension View {
     @ViewBuilder
@@ -30,5 +45,13 @@ extension View {
             self
         }
     }
+    
+    @ViewBuilder
+    func hideScrollIndicatorsIfAvailable() -> some View {
+        if #available(iOS 16.0, *) {
+            self.scrollIndicators(.hidden)
+        } else {
+            self
+        }
+    }
 }
-
