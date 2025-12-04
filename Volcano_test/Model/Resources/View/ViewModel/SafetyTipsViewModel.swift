@@ -67,6 +67,14 @@ class SafetyTipsViewModel: ObservableObject {
             color: .purple
         )
     ]
+
+    var totalSteps: Int {
+        safetyTips.count
+    }
+
+    var isLastStep: Bool {
+        currentStep == safetyTips.count - 1
+    }
     
     let safetyGear: [SafetyGearItem] = [
         SafetyGearItem(id: 0, name: "Helmet", emoji: "⛑️", description: "Protects your head from falling rocks"),

@@ -11,15 +11,13 @@ struct PuzzleView: View {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
     
+    @ObservedObject private var themeManager = ThemeManager.shared
+    
     var body: some View {
         ZStack {
-            // Beautiful gradient background matching app theme
+            // Dynamic gradient background based on selected theme
             LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(red: 0.2, green: 0.0, blue: 0.1),
-                    AppTheme.Colors.primaryBackground,
-                    AppTheme.Colors.accent.opacity(0.8)
-                ]),
+                gradient: Gradient(colors: themeManager.themeColors.backgroundGradient),
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )

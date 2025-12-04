@@ -3,13 +3,19 @@ import SwiftUI
 struct ContentView: View {
     @State private var isAnimating = false
     @StateObject private var viewModel = PageViewModel()
+    @ObservedObject private var themeManager = ThemeManager.shared
     
     var body: some View {
         NavigationView {
             GeometryReader { geometry in
             ZStack {
-                    AppTheme.Colors.primaryBackground
-                        .ignoresSafeArea()
+                    // Dynamic background based on selected theme
+                    LinearGradient(
+                        gradient: Gradient(colors: themeManager.themeColors.backgroundGradient),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                    .ignoresSafeArea()
                 
                 VStack {
                     Spacer()

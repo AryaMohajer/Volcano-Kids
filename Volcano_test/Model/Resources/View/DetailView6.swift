@@ -7,16 +7,13 @@ struct DetailView6: View {
     @StateObject private var safetyViewModel = SafetyTipsViewModel()
     @Environment(\.presentationMode) var presentationMode
     
+    @ObservedObject private var themeManager = ThemeManager.shared
+    
     var body: some View {
         ZStack {
-            // Beautiful gradient background
+            // Dynamic gradient background based on selected theme
             LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(red: 0.1, green: 0.0, blue: 0.2),
-                    Color(red: 0.3, green: 0.0, blue: 0.1),
-                    AppTheme.Colors.primaryBackground,
-                    AppTheme.Colors.accent.opacity(0.8)
-                ]),
+                gradient: Gradient(colors: themeManager.themeColors.backgroundGradient),
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -51,6 +48,12 @@ struct DetailView6: View {
         .navigationBarTitle("", displayMode: .inline)
         .navigationBarHidden(true)
         .navigationBarBackButtonHidden(true)
+        .onChange(of: safetyViewModel.currentStep) { newStep in
+            // Mark page as completed when user reaches the last step
+            if safetyViewModel.isLastStep {
+                viewModel.completePage(pageId)
+            }
+        }
     }
     
     // MARK: - Educational Section (Redesigned to match Parts of Volcano)
@@ -77,7 +80,9 @@ struct DetailView6: View {
             HStack(spacing: 8) {
                 ForEach(0..<safetyViewModel.safetyTips.count, id: \.self) { index in
                     Circle()
-                        .fill(index <= safetyViewModel.currentStep ? Color.yellow : Color.white.opacity(0.3))
+                        .fill(index <= safetyViewModel.currentStep ?
+                              Color.green :
+                              Color.white.opacity(0.3))
                         .frame(width: 10, height: 10)
                         .scaleEffect(index == safetyViewModel.currentStep ? 1.3 : 1.0)
                         .animation(.spring(response: 0.3), value: safetyViewModel.currentStep)

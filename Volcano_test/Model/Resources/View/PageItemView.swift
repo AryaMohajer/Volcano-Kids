@@ -9,37 +9,50 @@ struct PageItemView: View {
         ZStack {
    
             NavigationLink(destination: destinationView(for: page.id)) {
-                Image(imageName(for: page.id))
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: AppTheme.Sizes.cardWidth, height: AppTheme.Sizes.cardHeight)
-                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.CornerRadius.card))
-                    .shadow(
-                        color: page.isUnlocked ? .black.opacity(0.3) : .clear,
-                        radius: AppTheme.Shadows.medium,
-                        x: 5,
-                        y: 5
-                    )
-                    .overlay(
+                ZStack {
+                    Image(imageName(for: page.id))
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: AppTheme.Sizes.cardWidth, height: AppTheme.Sizes.cardHeight)
+                        .clipShape(RoundedRectangle(cornerRadius: AppTheme.CornerRadius.card))
+                        .shadow(
+                            color: page.isUnlocked ? .black.opacity(0.3) : .clear,
+                            radius: AppTheme.Shadows.medium,
+                            x: 5,
+                            y: 5
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: AppTheme.CornerRadius.card)
+                                .stroke(
+                                    page.isUnlocked ? AppTheme.Colors.border : Color.clear,
+                                    lineWidth: 3
+                                )
+                        )
+                        .background(
+                            RoundedRectangle(cornerRadius: AppTheme.CornerRadius.card)
+                                .fill(AppTheme.Colors.cardBackground)
+                                .shadow(
+                                    color: page.isUnlocked ? AppTheme.Colors.primaryBackground.opacity(0.5) : Color.clear,
+                                    radius: AppTheme.Shadows.medium,
+                                    x: 0,
+                                    y: 5
+                                )
+                        )
+                        .grayscale(page.isUnlocked ? 0 : 0.8)
+                        .opacity(page.isUnlocked ? 1 : 0.5)
+                        .animation(.easeInOut, value: page.isUnlocked)
+                    
+                    // Green overlay for completed pages
+                    if page.isCompleted {
                         RoundedRectangle(cornerRadius: AppTheme.CornerRadius.card)
-                            .stroke(
-                                page.isUnlocked ? AppTheme.Colors.border : Color.clear,
-                                lineWidth: 3
+                            .fill(Color.green.opacity(0.3))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: AppTheme.CornerRadius.card)
+                                    .stroke(Color.green, lineWidth: 4)
                             )
-                    )
-                    .background(
-                        RoundedRectangle(cornerRadius: AppTheme.CornerRadius.card)
-                            .fill(AppTheme.Colors.cardBackground)
-                            .shadow(
-                                color: page.isUnlocked ? AppTheme.Colors.primaryBackground.opacity(0.5) : Color.clear,
-                                radius: AppTheme.Shadows.medium,
-                                x: 0,
-                                y: 5
-                            )
-                    )
-                    .grayscale(page.isUnlocked ? 0 : 0.8)
-                    .opacity(page.isUnlocked ? 1 : 0.5)
-                    .animation(.easeInOut, value: page.isUnlocked)
+                            .frame(width: AppTheme.Sizes.cardWidth, height: AppTheme.Sizes.cardHeight)
+                    }
+                }
             }
             
             if !page.isUnlocked {

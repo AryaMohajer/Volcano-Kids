@@ -5,12 +5,18 @@ struct PuzzleListView: View {
     @StateObject private var viewModel = PuzzleListViewModel()
     @Environment(\.presentationMode) var presentationMode
 
+    @ObservedObject private var themeManager = ThemeManager.shared
+    
     var body: some View {
         NavigationView {
             ZStack {
-                // Background
-                AppTheme.Colors.primaryBackground
-                            .ignoresSafeArea()
+                // Dynamic gradient background based on selected theme
+                LinearGradient(
+                    gradient: Gradient(colors: themeManager.themeColors.backgroundGradient),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
                 
                 // Content container
                 VStack(spacing: 0) {

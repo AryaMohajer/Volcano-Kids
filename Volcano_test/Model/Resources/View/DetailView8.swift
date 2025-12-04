@@ -196,13 +196,13 @@ struct DetailView8: View {
             Button("Cancel", role: .cancel) { }
             Button("Reset", role: .destructive) {
                 settingsViewModel.resetProgress()
-                // Reload pages to reflect the reset
+                // Reload pages to reflect the reset and clear completion status
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     viewModel.loadPages()
                 }
             }
         } message: {
-            Text("Are you sure you want to reset all progress? This will lock all pages except the first one.")
+            Text("Are you sure you want to reset all progress? This will lock all pages except the first one and reset the theme to default.")
         }
     }
     

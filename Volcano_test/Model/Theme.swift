@@ -2,20 +2,45 @@ import SwiftUI
 
 /// Centralized theme and constants for the app
 struct AppTheme {
-    // MARK: - Colors
+    // MARK: - Colors (Dynamic - uses ThemeManager)
     struct Colors {
-        static let primaryBackground = Color.red
-        static let secondaryBackground = Color.orange
-        static let accent = Color.orange
-        static let textPrimary = Color.white
-        static let textSecondary = Color.white.opacity(0.9)
-        static let overlay = Color.black.opacity(0.6)
-        static let cardBackground = Color.white
-        static let border = Color(red: 1.0, green: 0.27, blue: 0.0)
+        static var primaryBackground: Color {
+            ThemeManager.shared.themeColors.primaryBackground
+        }
+        static var secondaryBackground: Color {
+            ThemeManager.shared.themeColors.secondaryBackground
+        }
+        static var accent: Color {
+            ThemeManager.shared.themeColors.accent
+        }
+        static var textPrimary: Color {
+            ThemeManager.shared.themeColors.textPrimary
+        }
+        static var textSecondary: Color {
+            ThemeManager.shared.themeColors.textSecondary
+        }
+        static var overlay: Color {
+            ThemeManager.shared.themeColors.overlay
+        }
+        static var cardBackground: Color {
+            ThemeManager.shared.themeColors.cardBackground
+        }
+        static var border: Color {
+            ThemeManager.shared.themeColors.border
+        }
         
         // Gradient colors
-        static let gradientStart = Color.red.opacity(0.7)
-        static let gradientEnd = Color.orange.opacity(0.7)
+        static var gradientStart: Color {
+            ThemeManager.shared.themeColors.gradientStart
+        }
+        static var gradientEnd: Color {
+            ThemeManager.shared.themeColors.gradientEnd
+        }
+        
+        // Background gradient for pages
+        static var backgroundGradient: [Color] {
+            ThemeManager.shared.themeColors.backgroundGradient
+        }
     }
     
     // MARK: - Typography

@@ -14,16 +14,13 @@ struct DetailView3: View {
         _detailViewModel = StateObject(wrappedValue: DetailView3ViewModel(pageViewModel: viewModel, pageId: pageId))
     }
     
+    @ObservedObject private var themeManager = ThemeManager.shared
+    
     var body: some View {
             ZStack {
-            // Beautiful gradient background
+            // Dynamic gradient background based on selected theme
             LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(red: 0.1, green: 0.0, blue: 0.2),
-                    Color(red: 0.3, green: 0.0, blue: 0.1),
-                    AppTheme.Colors.primaryBackground,
-                    AppTheme.Colors.accent.opacity(0.8)
-                ]),
+                gradient: Gradient(colors: themeManager.themeColors.backgroundGradient),
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -83,6 +80,18 @@ struct DetailView3: View {
             }
         }
         .navigationBarBackButtonHidden(true)
+        .onChange(of: partsViewModel.currentStep) { newStep in
+            // Mark page as completed when user reaches the last step
+            if partsViewModel.isLastStep {
+                viewModel.completePage(pageId)
+            }
+        }
+        .onChange(of: quizViewModel.allQuestionsCorrect) { isComplete in
+            // Also mark as completed if quiz is completed successfully
+            if isComplete {
+                viewModel.completePage(pageId)
+            }
+        }
     }
     
     // MARK: - Educational Section (Redesigned)
@@ -109,12 +118,14 @@ struct DetailView3: View {
             HStack(spacing: 8) {
                 ForEach(0..<partsViewModel.totalSteps, id: \.self) { index in
                     Circle()
-                        .fill(index <= partsViewModel.currentStep ? Color.yellow : Color.white.opacity(0.3))
+                        .fill(index <= partsViewModel.currentStep ?
+                              Color.green :
+                              Color.white.opacity(0.3))
                         .frame(width: 10, height: 10)
                         .scaleEffect(index == partsViewModel.currentStep ? 1.3 : 1.0)
                         .animation(.spring(response: 0.3), value: partsViewModel.currentStep)
-                                        }
-                                    }
+                }
+            }
             .padding(.vertical, AppTheme.Spacing.small)
             
             // Main content area with pagination
@@ -272,13 +283,13 @@ struct DetailView3: View {
                     if quizViewModel.quizScore > 0 {
                         Text("Score: \(quizViewModel.quizScore)")
                             .font(.custom("Noteworthy-Bold", size: 24))
-                            .foregroundColor(.yellow)
+                            .foregroundColor(.green)
                             .padding()
         .background(
                                 RoundedRectangle(cornerRadius: 15)
                                     .fill(Color.black.opacity(0.3))
-        )
-    }
+                            )
+                    }
     
                     if !quizViewModel.showQuizResults {
                         // Show current question one at a time

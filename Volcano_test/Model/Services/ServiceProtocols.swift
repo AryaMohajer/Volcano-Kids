@@ -6,6 +6,8 @@ protocol PersistenceServiceProtocol {
     func unlockPage(_ id: Int)
     func isPageUnlocked(_ id: Int) -> Bool
     func resetProgress()
+    func completePage(_ id: Int)
+    func isPageCompleted(_ id: Int) -> Bool
 }
 
 // MARK: - Audio Service Protocol

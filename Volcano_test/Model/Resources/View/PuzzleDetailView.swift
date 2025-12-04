@@ -4,18 +4,17 @@ struct PuzzleDetailView: View {
     let puzzle: PuzzleItem
     @Environment(\.presentationMode) var presentationMode
 
+    @ObservedObject private var themeManager = ThemeManager.shared
+    
     var body: some View {
         ZStack {
+            // Dynamic gradient background based on selected theme
             LinearGradient(
-                gradient: Gradient(colors: [
-                    Color.black,
-                    AppTheme.Colors.primaryBackground,
-                    AppTheme.Colors.accent
-                ]),
-                           startPoint: .top,
+                gradient: Gradient(colors: themeManager.themeColors.backgroundGradient),
+                startPoint: .top,
                 endPoint: .bottom
             )
-                .ignoresSafeArea()
+            .ignoresSafeArea()
 
             VStack(spacing: 0) {
                 // Header with back button

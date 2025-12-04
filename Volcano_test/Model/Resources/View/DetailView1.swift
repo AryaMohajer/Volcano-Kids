@@ -9,20 +9,17 @@ struct DetailView1: View {
     @State private var showModelView = false
     @Environment(\.presentationMode) var presentationMode
     
+    @ObservedObject private var themeManager = ThemeManager.shared
+    
     var body: some View {
         ZStack {
-            // Beautiful gradient background
+            // Dynamic gradient background based on selected theme
             LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(red: 0.1, green: 0.0, blue: 0.2),
-                    Color(red: 0.3, green: 0.0, blue: 0.1),
-                    AppTheme.Colors.primaryBackground,
-                    AppTheme.Colors.accent.opacity(0.8)
-                ]),
+                gradient: Gradient(colors: themeManager.themeColors.backgroundGradient),
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
-                        .ignoresSafeArea()
+            .ignoresSafeArea()
             
             VStack(spacing: 0) {
                 // Header with back button (only one)
@@ -54,6 +51,12 @@ struct DetailView1: View {
         .sheet(isPresented: $showModelView) {
             ModelView()
         }
+        .onChange(of: historyViewModel.currentStep) { newStep in
+            // Mark page as completed when user reaches the last step
+            if historyViewModel.isLastStep {
+                viewModel.completePage(pageId)
+            }
+        }
     }
     
     // MARK: - Educational Section
@@ -76,11 +79,13 @@ struct DetailView1: View {
             .padding(.horizontal)
             .padding(.top, AppTheme.Spacing.small)
             
-            // Progress dots
+            // Progress dots - green for completed steps
             HStack(spacing: 8) {
                 ForEach(0..<historyViewModel.totalSteps, id: \.self) { index in
                     Circle()
-                        .fill(index <= historyViewModel.currentStep ? Color.yellow : Color.white.opacity(0.3))
+                        .fill(index <= historyViewModel.currentStep ?
+                              Color.green :
+                              Color.white.opacity(0.3))
                         .frame(width: 10, height: 10)
                         .scaleEffect(index == historyViewModel.currentStep ? 1.3 : 1.0)
                         .animation(.spring(response: 0.3), value: historyViewModel.currentStep)
