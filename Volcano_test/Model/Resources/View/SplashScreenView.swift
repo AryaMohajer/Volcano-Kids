@@ -1,14 +1,17 @@
 import SwiftUI
 
 struct SplashScreenView: View {
+    @ObservedObject private var themeManager = ThemeManager.shared
     @State private var iconScale: CGFloat = 0.85
     @State private var glowOpacity: Double = 0.4
     @State private var textOpacity: Double = 0.0
     
     var body: some View {
+        let themeColors = themeManager.themeColors
+        
         ZStack {
             LinearGradient(
-                gradient: Gradient(colors: [Color(red: 0.7, green: 0.0, blue: 0.1), Color.orange]),
+                gradient: Gradient(colors: themeColors.backgroundGradient),
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -22,12 +25,12 @@ struct SplashScreenView: View {
                         .blur(radius: 20)
                         .opacity(glowOpacity)
                     
-                    Image("VolcanoExplorerIcon")
+                    Image("icon_splashscreen")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 160, height: 160)
                         .scaleEffect(iconScale)
-                        .shadow(color: .orange.opacity(0.6), radius: 10, x: 0, y: 5)
+                        .shadow(color: themeColors.accent.opacity(0.6), radius: 10, x: 0, y: 5)
                 }
                 
                 VStack(spacing: 12) {
@@ -37,7 +40,7 @@ struct SplashScreenView: View {
                         .shadow(color: .black.opacity(0.4), radius: 8, x: 0, y: 4)
                         .opacity(textOpacity)
                     
-                    Text("Volcano Explorer is ready—let's spark a lava adventure!")
+                    Text("let's spark a lava adventure!")
                         .font(.custom("Noteworthy-Bold", size: 20))
                         .multilineTextAlignment(.center)
                         .foregroundColor(Color.white.opacity(0.9))

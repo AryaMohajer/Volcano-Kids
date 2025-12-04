@@ -20,7 +20,7 @@ struct ContentView: View {
                 VStack {
                     Spacer()
                     
-                    Text("Volcano Kids")
+                    Text("Volcano Explorer")
                             .font(AppTheme.Typography.appTitleFont)
                             .foregroundColor(AppTheme.Colors.textPrimary)
                             .shadow(radius: AppTheme.Shadows.small)
