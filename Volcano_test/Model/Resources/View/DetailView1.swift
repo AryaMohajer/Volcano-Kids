@@ -84,7 +84,7 @@ struct DetailView1: View {
                         .frame(width: 10, height: 10)
                         .scaleEffect(index == historyViewModel.currentStep ? 1.3 : 1.0)
                         .animation(.spring(response: 0.3), value: historyViewModel.currentStep)
-                }
+                    }
             }
             .padding(.vertical, AppTheme.Spacing.small)
             
@@ -96,7 +96,7 @@ struct DetailView1: View {
                             // Title
                             Text("History of Earth")
                                 .font(.custom("Noteworthy-Bold", size: 38))
-                                .foregroundColor(.white)
+                            .foregroundColor(.white)
                                 .shadow(color: .black, radius: 10)
                                 .padding(.top, AppTheme.Spacing.medium)
                             
@@ -118,7 +118,7 @@ struct DetailView1: View {
                                     fact: historyViewModel.historyStages[step].funFact,
                                     emoji: historyViewModel.historyStages[step].emoji
                                 )
-                            }
+            }
                             .padding(.horizontal)
                             
                             // 3D Model button (only on last step)
@@ -144,8 +144,8 @@ struct DetailView1: View {
                                                     endPoint: .trailing
                                                 )
                                             )
-                                    )
-                                }
+        )
+    }
                                 .padding(.horizontal)
                             }
                             

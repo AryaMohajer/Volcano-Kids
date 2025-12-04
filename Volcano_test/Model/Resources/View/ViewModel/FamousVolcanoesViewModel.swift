@@ -145,21 +145,4 @@ class FamousVolcanoesViewModel: ObservableObject {
     }
 }
 
-struct FamousVolcano: Identifiable {
-    let id: Int
-    let flag: String
-    let title: String
-    let location: String
-    let description: String
-    let microStory: String
-    let funFact: String
-    let height: String
-    let color: Color
-}
-
-struct FamousVolcanoQuizQuestion {
-    let question: String
-    let options: [String]
-    let correctAnswer: Int
-}
 

@@ -90,7 +90,7 @@ struct DetailView2: View {
                             // Title
                             Text("What is Volcano?")
                                 .font(.custom("Noteworthy-Bold", size: 38))
-                                .foregroundColor(.white)
+                    .foregroundColor(.white)
                                 .shadow(color: .black, radius: 10)
                                 .padding(.top, AppTheme.Spacing.medium)
                             
@@ -149,7 +149,7 @@ struct DetailView2: View {
                                     fact: introViewModel.introStages[step].funFact,
                                     emoji: introViewModel.introStages[step].emoji
                                 )
-                            }
+                    }
                             .padding(.horizontal)
                             
                             // Mini Quiz - different question for each step

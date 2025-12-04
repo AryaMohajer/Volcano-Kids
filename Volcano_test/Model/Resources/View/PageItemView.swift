@@ -67,6 +67,8 @@ struct PageItemView: View {
             return "Volcano Safety Tips"
         case 7:
             return "Volcano Rocks"
+        case 8:
+            return "Setting" // Settings page (matches asset name)
         default:
             // For pages 1, 2, 3, use the original naming convention
             return "image\(id)"
@@ -83,6 +85,7 @@ struct PageItemView: View {
         case 5: DetailView5(viewModel: viewModel, pageId: id)
         case 6: DetailView6(viewModel: viewModel, pageId: id)
         case 7: DetailView7(viewModel: viewModel, pageId: id)
+        case 8: DetailView8(viewModel: viewModel, pageId: id)
         default: Text("Page Not Found")
         }
     }

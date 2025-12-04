@@ -12,10 +12,10 @@ struct PuzzleDetailView: View {
                     AppTheme.Colors.primaryBackground,
                     AppTheme.Colors.accent
                 ]),
-                startPoint: .top,
+                           startPoint: .top,
                 endPoint: .bottom
             )
-            .ignoresSafeArea()
+                .ignoresSafeArea()
 
             VStack(spacing: 0) {
                 // Header with back button
@@ -58,22 +58,22 @@ struct PuzzleDetailView: View {
                             .foregroundColor(AppTheme.Colors.textPrimary)
                             .font(.custom("Noteworthy-Bold", size: 32))
                             .shadow(color: .black.opacity(0.5), radius: 5)
-                            .padding()
+                        .padding()
 
                         Text(puzzle.text)
                             .foregroundColor(AppTheme.Colors.textSecondary)
                             .font(.custom("Noteworthy-Bold", size: 18))
-                            .multilineTextAlignment(.leading)
-                            .padding()
-                        
-                        Spacer()
+                        .multilineTextAlignment(.leading)
+                        .padding()
+                    
+                    Spacer()
                             .frame(height: AppTheme.Spacing.medium)
 
-                        // Navigation to PuzzleView
+                    // Navigation to PuzzleView
                         NavigationLink(destination: PuzzleView(selectedPuzzleIndex: puzzle.puzzleIndex)) {
                             HStack {
                                 Image(systemName: "play.fill")
-                                Text("Start The Game")
+                        Text("Start The Game")
                             }
                             .font(.custom("Noteworthy-Bold", size: 20))
                             .foregroundColor(.white)
@@ -94,8 +94,8 @@ struct PuzzleDetailView: View {
                         }
                         .padding(.horizontal)
                         .padding(.bottom, AppTheme.Spacing.extraLarge)
-                    }
-                    .padding()
+                }
+                .padding()
                 }
             }
         }

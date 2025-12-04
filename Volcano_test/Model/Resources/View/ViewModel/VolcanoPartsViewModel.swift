@@ -114,16 +114,4 @@ class VolcanoPartsViewModel: ObservableObject {
     }
 }
 
-/// Enhanced volcano part information model
-struct VolcanoPartInfo: Identifiable {
-    let id = UUID()
-    let name: String
-    let emoji: String
-    let shortDescription: String
-    let fullDescription: String
-    let microStory: String
-    let funFact: String
-    let color: Color
-    let iconName: String
-}
 

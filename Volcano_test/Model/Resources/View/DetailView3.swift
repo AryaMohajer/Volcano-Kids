@@ -3,49 +3,16 @@ import SwiftUI
 struct DetailView3: View {
     @ObservedObject var viewModel: PageViewModel
     let pageId: Int
+    @StateObject private var detailViewModel: DetailView3ViewModel
     @StateObject private var partsViewModel = VolcanoPartsViewModel()
-    @State private var currentSection: Int = 0 // 0 = educational, 1 = quiz
-    @State private var currentQuestionIndex = 0
-    @State private var quizAnswers: [Int] = []
-    @State private var showQuizResults = false
-    @State private var quizScore = 0
-    @State private var showWrongAnswerAlert = false
-    @State private var lastScore = 0
+    @StateObject private var quizViewModel = VolcanoPartsQuizViewModel()
     @Environment(\.presentationMode) var presentationMode
     
-    // Quiz questions - 30 questions
-    let quizQuestions: [QuizQuestion] = [
-        QuizQuestion(question: "What is the opening at the top of a volcano called?", options: ["Crater", "Vent", "Magma Chamber", "Lava Flow"], correctAnswer: 0),
-        QuizQuestion(question: "Where does magma wait before erupting?", options: ["Crater", "Vent", "Magma Chamber", "Ash Cloud"], correctAnswer: 2),
-        QuizQuestion(question: "What shoots high into the sky during an eruption?", options: ["Lava", "Magma", "Ash Cloud", "Rocks"], correctAnswer: 2),
-        QuizQuestion(question: "What flows down the mountain like a hot river?", options: ["Magma", "Lava Flow", "Ash", "Steam"], correctAnswer: 1),
-        QuizQuestion(question: "What is the tunnel that helps magma escape?", options: ["Crater", "Vent", "Chamber", "Flow"], correctAnswer: 1),
-        QuizQuestion(question: "What is hot, melted rock called when it's inside the volcano?", options: ["Lava", "Magma", "Ash", "Steam"], correctAnswer: 1),
-        QuizQuestion(question: "What is hot, melted rock called when it comes out of the volcano?", options: ["Magma", "Lava", "Ash", "Rocks"], correctAnswer: 1),
-        QuizQuestion(question: "Which part of a volcano is at the very top?", options: ["Vent", "Crater", "Magma Chamber", "Base"], correctAnswer: 1),
-        QuizQuestion(question: "What happens when a volcano erupts?", options: ["It rains", "Lava and ash come out", "It gets cold", "Nothing"], correctAnswer: 1),
-        QuizQuestion(question: "What color is hot lava?", options: ["Blue", "Green", "Red and orange", "Yellow"], correctAnswer: 2),
-        QuizQuestion(question: "How hot can lava get?", options: ["100°C", "500°C", "1,200°C", "2,000°C"], correctAnswer: 2),
-        QuizQuestion(question: "What is the name for tiny pieces of rock that shoot from a volcano?", options: ["Lava", "Magma", "Ash", "Steam"], correctAnswer: 2),
-        QuizQuestion(question: "Where is the magma chamber located?", options: ["At the top", "On the side", "Deep underground", "In the sky"], correctAnswer: 2),
-        QuizQuestion(question: "What shape is a volcano usually?", options: ["Square", "Round like a cone", "Triangle", "Rectangle"], correctAnswer: 1),
-        QuizQuestion(question: "Can volcanoes be found underwater?", options: ["No", "Yes, they can!", "Only in movies", "Maybe"], correctAnswer: 1),
-        QuizQuestion(question: "What do we call a volcano that might erupt again?", options: ["Dead", "Sleeping", "Active", "Old"], correctAnswer: 2),
-        QuizQuestion(question: "What do we call a volcano that hasn't erupted in a long time?", options: ["Active", "Dormant", "Extinct", "Sleeping"], correctAnswer: 1),
-        QuizQuestion(question: "Which volcano part is like a tunnel?", options: ["Crater", "Vent", "Magma Chamber", "Lava Flow"], correctAnswer: 1),
-        QuizQuestion(question: "What comes out of the crater during an eruption?", options: ["Water", "Lava and ash", "Snow", "Wind"], correctAnswer: 1),
-        QuizQuestion(question: "What is the biggest part of a volcano?", options: ["The crater", "The vent", "The magma chamber", "The ash cloud"], correctAnswer: 2),
-        QuizQuestion(question: "How fast can lava flow?", options: ["As slow as walking", "As fast as a car", "As fast as a plane", "It doesn't move"], correctAnswer: 1),
-        QuizQuestion(question: "What happens to lava when it cools down?", options: ["It disappears", "It turns into rock", "It turns into water", "It turns into air"], correctAnswer: 1),
-        QuizQuestion(question: "What is the dark cloud that comes from a volcano?", options: ["Rain cloud", "Ash cloud", "Snow cloud", "Wind cloud"], correctAnswer: 1),
-        QuizQuestion(question: "Can ash clouds travel far away?", options: ["No, they stay close", "Yes, all around the world!", "Only a few miles", "They don't move"], correctAnswer: 1),
-        QuizQuestion(question: "What is the bottom part of a volcano called?", options: ["Top", "Base", "Middle", "Side"], correctAnswer: 1),
-        QuizQuestion(question: "What do volcanoes create when they erupt underwater?", options: ["Bubbles", "New islands", "Fish", "Coral"], correctAnswer: 1),
-        QuizQuestion(question: "What is the hottest part of a volcano?", options: ["The top", "The magma chamber", "The outside", "The base"], correctAnswer: 1),
-        QuizQuestion(question: "How many active volcanoes are there in the world?", options: ["About 100", "About 500", "About 1,500", "About 5,000"], correctAnswer: 2),
-        QuizQuestion(question: "What do we call the path lava takes down the mountain?", options: ["Lava trail", "Lava flow", "Lava path", "Lava road"], correctAnswer: 1),
-        QuizQuestion(question: "What makes a volcano erupt?", options: ["Rain", "Wind", "Pressure from hot magma", "Cold weather"], correctAnswer: 2)
-    ]
+    init(viewModel: PageViewModel, pageId: Int) {
+        self.viewModel = viewModel
+        self.pageId = pageId
+        _detailViewModel = StateObject(wrappedValue: DetailView3ViewModel(pageViewModel: viewModel, pageId: pageId))
+    }
     
     var body: some View {
             ZStack {
@@ -85,11 +52,9 @@ struct DetailView3: View {
                     Spacer()
                     
                     // Section toggle
-                    if currentSection == 0 {
+                    if detailViewModel.currentSection == 0 {
                         Button(action: {
-                            withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
-                                currentSection = 1
-                            }
+                            detailViewModel.switchToQuiz()
                         }) {
                             HStack {
                                 Text("Take Quiz")
@@ -108,7 +73,7 @@ struct DetailView3: View {
                 }
                 .padding()
                 
-                if currentSection == 0 {
+                if detailViewModel.currentSection == 0 {
                     // Educational Section
                     educationalSection
                 } else {
@@ -122,7 +87,7 @@ struct DetailView3: View {
     
     // MARK: - Educational Section (Redesigned)
     private var educationalSection: some View {
-        VStack(spacing: 0) {
+                                VStack(spacing: 0) {
             // Step indicator - centered
             HStack {
                 Spacer()
@@ -136,7 +101,7 @@ struct DetailView3: View {
                             .fill(Color.black.opacity(0.3))
                     )
                 Spacer()
-            }
+                                }
             .padding(.horizontal)
             .padding(.top, AppTheme.Spacing.small)
             
@@ -148,8 +113,8 @@ struct DetailView3: View {
                         .frame(width: 10, height: 10)
                         .scaleEffect(index == partsViewModel.currentStep ? 1.3 : 1.0)
                         .animation(.spring(response: 0.3), value: partsViewModel.currentStep)
-                }
-            }
+                                        }
+                                    }
             .padding(.vertical, AppTheme.Spacing.small)
             
             // Main content area with pagination
@@ -190,10 +155,10 @@ struct DetailView3: View {
                                 VStack {
                                     Text("Watch the lava flow! 🌊")
                                         .font(.custom("Noteworthy-Bold", size: 20))
-                                        .foregroundColor(.white)
+                                    .foregroundColor(.white)
                                     AnimatedLavaView()
                                         .padding()
-                                }
+                            }
                                 .padding(.horizontal)
                             }
                             
@@ -201,18 +166,18 @@ struct DetailView3: View {
                             if !partsViewModel.isLastStep {
                                 HStack {
                                     Spacer()
-                                    Button(action: {
+                                Button(action: {
                                         partsViewModel.nextStep()
-                                    }) {
-                                        HStack {
+                                }) {
+                                    HStack {
                                             Text("Next Adventure")
                                             Image(systemName: "chevron.right")
                                         }
                                         .font(.custom("Noteworthy-Bold", size: 18))
-                                        .foregroundColor(.white)
+                                    .foregroundColor(.white)
                                         .padding(.horizontal, AppTheme.Spacing.large)
                                         .padding(.vertical, AppTheme.Spacing.medium)
-                                        .background(
+                                    .background(
                                             RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
                                                 .fill(
                                                     LinearGradient(
@@ -221,22 +186,22 @@ struct DetailView3: View {
                                                         endPoint: .trailing
                                                     )
                                                 )
-                                        )
-                                    }
-                                    Spacer()
+                                    )
                                 }
+                                    Spacer()
+                            }
                                 .padding(.horizontal)
                                 .padding(.bottom, AppTheme.Spacing.extraLarge)
                             } else {
                                 // Last step - just add spacing, no buttons or text
                                 Spacer()
                                     .frame(height: AppTheme.Spacing.extraLarge)
-                            }
                         }
+                    }
                     }
                     .tag(step)
                 }
-            }
+                }
             .tabViewStyle(.page(indexDisplayMode: .never))
         }
     }
@@ -247,10 +212,8 @@ struct DetailView3: View {
             // Header with back button (only one)
             HStack {
                 Button(action: {
-                    withAnimation {
-                        currentSection = 0
-                        resetQuiz()
-                    }
+                    detailViewModel.switchToEducational()
+                    quizViewModel.resetQuiz()
                 }) {
                     HStack(spacing: 4) {
                         Image(systemName: "chevron.left")
@@ -277,10 +240,10 @@ struct DetailView3: View {
                         .padding(.top, 10)
                                 
                     // Progress indicator
-                                VStack(spacing: 10) {
-                        Text("Question \(currentQuestionIndex + 1) of \(quizQuestions.count)")
+                    VStack(spacing: 10) {
+                        Text("Question \(quizViewModel.currentQuestionIndex + 1) of \(quizViewModel.totalQuestions)")
                             .font(.custom("Noteworthy-Bold", size: 20))
-                            .foregroundColor(.white.opacity(0.9))
+                .foregroundColor(.white.opacity(0.9))
                         
                         // Progress bar
                         GeometryReader { geometry in
@@ -297,8 +260,8 @@ struct DetailView3: View {
                                             endPoint: .trailing
                                         )
                                     )
-                                    .frame(width: geometry.size.width * CGFloat(currentQuestionIndex + 1) / CGFloat(quizQuestions.count), height: 20)
-                            }
+                                    .frame(width: geometry.size.width * CGFloat(quizViewModel.progress), height: 20)
+        }
                         }
                         .frame(height: 20)
                         .padding(.horizontal)
@@ -306,60 +269,58 @@ struct DetailView3: View {
                     .padding()
                     
                     // Current score display
-                    if quizScore > 0 {
-                        Text("Score: \(quizScore)")
+                    if quizViewModel.quizScore > 0 {
+                        Text("Score: \(quizViewModel.quizScore)")
                             .font(.custom("Noteworthy-Bold", size: 24))
                             .foregroundColor(.yellow)
                             .padding()
-                            .background(
+        .background(
                                 RoundedRectangle(cornerRadius: 15)
                                     .fill(Color.black.opacity(0.3))
-                            )
-                    }
-                    
-                    if !showQuizResults {
+        )
+    }
+    
+                    if !quizViewModel.showQuizResults {
                         // Show current question one at a time
-                        if currentQuestionIndex < quizQuestions.count {
+                        if let currentQuestion = quizViewModel.currentQuestion {
                             SingleQuestionView(
-                                question: quizQuestions[currentQuestionIndex],
-                                questionNumber: currentQuestionIndex + 1,
-                                totalQuestions: quizQuestions.count,
-                                selectedAnswer: currentQuestionIndex < quizAnswers.count ? quizAnswers[currentQuestionIndex] : nil,
+                                question: currentQuestion,
+                                questionNumber: quizViewModel.currentQuestionIndex + 1,
+                                totalQuestions: quizViewModel.totalQuestions,
+                                selectedAnswer: quizViewModel.currentQuestionIndex < quizViewModel.quizAnswers.count ? quizViewModel.quizAnswers[quizViewModel.currentQuestionIndex] : nil,
                                 onAnswerSelected: { answerIndex in
-                                    handleAnswer(answerIndex)
+                                    quizViewModel.handleAnswer(answerIndex)
+                                    if quizViewModel.allQuestionsCorrect {
+                                        detailViewModel.unlockNextPage()
+                                    }
                                 }
                             )
                             .padding(.horizontal)
                         }
                     } else {
                         // Show results
-                        if lastScore == quizQuestions.count {
+                        if quizViewModel.allQuestionsCorrect {
                             // Success - all questions answered correctly
                             SuccessResultsView(
-                                score: lastScore,
-                                total: quizQuestions.count,
+                                score: quizViewModel.lastScore,
+                                total: quizViewModel.totalQuestions,
                                 onBack: {
-                                    withAnimation {
-                                        currentSection = 0
-                                        resetQuiz()
-                                    }
+                                    detailViewModel.switchToEducational()
+                                    quizViewModel.resetQuiz()
                                 }
                             )
                             .padding()
                         } else {
                             // Wrong answer - show score and restart option
                             WrongAnswerResultsView(
-                                score: lastScore,
-                                total: quizQuestions.count,
+                                score: quizViewModel.lastScore,
+                                total: quizViewModel.totalQuestions,
                                 onRestart: {
-                                    resetQuiz()
-                                    showQuizResults = false
+                                    quizViewModel.resetQuiz()
                                 },
                                 onBack: {
-                                    withAnimation {
-                                        currentSection = 0
-                                        resetQuiz()
-                                    }
+                                    detailViewModel.switchToEducational()
+                                    quizViewModel.resetQuiz()
                                 }
                             )
                             .padding()
@@ -369,69 +330,10 @@ struct DetailView3: View {
                 .padding(.bottom, 30)
             }
         }
-        .alert("Wrong Answer! ❌", isPresented: $showWrongAnswerAlert) {
+        .alert("Wrong Answer! ❌", isPresented: $quizViewModel.showWrongAnswerAlert) {
             Button("OK") { }
         } message: {
             Text("That's not quite right. Let's start over from the beginning!")
-        }
-    }
-    
-    private func handleAnswer(_ answerIndex: Int) {
-        let currentQuestion = quizQuestions[currentQuestionIndex]
-        let isCorrect = answerIndex == currentQuestion.correctAnswer
-        
-        // Store answer
-        if currentQuestionIndex < quizAnswers.count {
-            quizAnswers[currentQuestionIndex] = answerIndex
-        } else {
-            quizAnswers.append(answerIndex)
-        }
-        
-        // Haptic feedback
-        let generator = UINotificationFeedbackGenerator()
-        
-        if isCorrect {
-            // Correct answer - move to next question
-            generator.notificationOccurred(.success)
-            quizScore += 1
-            
-            // Move to next question
-            if currentQuestionIndex < quizQuestions.count - 1 {
-                withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
-                    currentQuestionIndex += 1
-                }
-            } else {
-                // Completed all questions successfully!
-                lastScore = quizScore
-                withAnimation {
-                    showQuizResults = true
-                }
-                takeALookAndUnlockNextPage()
-            }
-        } else {
-            // Wrong answer - restart from first question
-            generator.notificationOccurred(.error)
-            lastScore = quizScore
-            
-            // Show wrong answer alert and results immediately
-            showWrongAnswerAlert = true
-            showQuizResults = true
-        }
-    }
-    
-    private func resetQuiz() {
-        currentQuestionIndex = 0
-        quizAnswers = []
-        quizScore = 0
-    }
-    
-    
-    private func takeALookAndUnlockNextPage() {
-        if let nextIndex = viewModel.pages.firstIndex(where: { $0.id == pageId }) {
-            let nextPageIndex = nextIndex + 1
-            if nextPageIndex < viewModel.pages.count {
-                viewModel.unlockPage(viewModel.pages[nextPageIndex].id)
-            }
         }
     }
 }
@@ -576,7 +478,7 @@ struct WrongAnswerResultsView: View {
                     HStack {
                         Image(systemName: "book.fill")
                         Text("Review")
-                    }
+        }
                     .font(.custom("Noteworthy-Bold", size: 18))
                     .foregroundColor(.white)
                     .padding()
@@ -658,7 +560,7 @@ struct SuccessResultsView: View {
                     RoundedRectangle(cornerRadius: 15)
                         .fill(Color.green.opacity(0.7))
                 )
-            }
+    }
         }
     }
 }
@@ -749,13 +651,6 @@ struct QuizResultsView: View {
             }
         }
     }
-}
-
-// MARK: - Supporting Types
-struct QuizQuestion {
-    let question: String
-    let options: [String]
-    let correctAnswer: Int
 }
 
 #Preview {

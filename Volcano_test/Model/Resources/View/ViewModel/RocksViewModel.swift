@@ -153,29 +153,4 @@ class RocksViewModel: ObservableObject {
     }
 }
 
-struct VolcanoRock: Identifiable {
-    let id: Int
-    let name: String
-    let emoji: String
-    let description: String
-    let microStory: String
-    let funFact: String
-    let color: Color
-    let icon: String
-}
-
-struct VolcanoMineral: Identifiable {
-    let id: Int
-    let name: String
-    let emoji: String
-    let description: String
-    let funFact: String
-    let color: Color
-}
-
-struct RocksQuizQuestion {
-    let question: String
-    let options: [String]
-    let correctAnswer: Int
-}
 

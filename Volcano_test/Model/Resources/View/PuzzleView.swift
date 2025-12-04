@@ -47,31 +47,31 @@ struct PuzzleView: View {
                 .padding(.horizontal, AppTheme.Spacing.medium)
                 .padding(.top, AppTheme.Spacing.small)
                 
-                VStack(spacing: 20) {
+        VStack(spacing: 20) {
                     Text("Sliding Puzzle")
                         .font(.custom("Noteworthy-Bold", size: 36))
                         .foregroundColor(.white)
                         .shadow(radius: 5)
-                    
-                    Text("Moves: \(viewModel.moveCount)")
+            
+            Text("Moves: \(viewModel.moveCount)")
                         .font(.custom("Noteworthy-Bold", size: 20))
                         .foregroundColor(.white.opacity(0.9))
                         .padding(.bottom, 10)
-                
+            
                 // Puzzle layout with better styling
                 VStack(spacing: 4) {
-                    ForEach(0..<viewModel.rows, id: \.self) { row in
+                ForEach(0..<viewModel.rows, id: \.self) { row in
                         HStack(spacing: 4) {
-                            ForEach(0..<viewModel.columns, id: \.self) { col in
-                                let coord = Coord(x: col, y: row)
-                                puzzleCell(coord)
+                        ForEach(0..<viewModel.columns, id: \.self) { col in
+                            let coord = Coord(x: col, y: row)
+                            puzzleCell(coord)
                                     .frame(width: AppTheme.Sizes.puzzleTileSize, height: AppTheme.Sizes.puzzleTileSize)
                                     .cornerRadius(8)
                                     .shadow(color: .black.opacity(0.3), radius: 3, x: 2, y: 2)
-                            }
                         }
                     }
                 }
+            }
                 .padding()
                 .background(
                     RoundedRectangle(cornerRadius: 15)
@@ -105,10 +105,10 @@ struct PuzzleView: View {
                             viewModel.sort()
                         }
                     }) {
-                        HStack {
+            HStack {
                             Image(systemName: "arrow.counterclockwise")
                             Text("Reset")
-                        }
+                }
                         .font(.custom("Noteworthy-Bold", size: 18))
                         .foregroundColor(.white)
                         .padding()
@@ -116,9 +116,9 @@ struct PuzzleView: View {
                             RoundedRectangle(cornerRadius: 12)
                                 .fill(Color.blue.opacity(0.8))
                         )
-                    }
-                }
-                .padding()
+            }
+        }
+        .padding()
                 }
             }
         }
@@ -127,8 +127,10 @@ struct PuzzleView: View {
             if viewModel.isPuzzleComplete() {
                 showCompletion = true
                 // Haptic feedback
-                let generator = UINotificationFeedbackGenerator()
-                generator.notificationOccurred(.success)
+                let isHapticEnabled = UserDefaults.standard.bool(forKey: "isHapticEnabled", defaultValue: true)
+                if isHapticEnabled {
+                    HapticService.shared.success()
+                }
             }
         }
         .alert("🎉 Congratulations!", isPresented: $showCompletion) {

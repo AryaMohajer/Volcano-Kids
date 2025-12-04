@@ -90,18 +90,4 @@ class VolcanoTypesViewModel: ObservableObject {
     }
 }
 
-/// Volcano type information model
-struct VolcanoTypeInfo: Identifiable {
-    let id = UUID()
-    let name: String
-    let emoji: String
-    let shortDescription: String
-    let fullDescription: String
-    let microStory: String
-    let funFact: String
-    let characteristics: [String]
-    let example: String
-    let color: Color
-    let iconName: String
-}
 

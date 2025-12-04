@@ -112,7 +112,7 @@ struct DetailView5: View {
                                     fact: famousViewModel.famousVolcanoes[step].funFact,
                                     emoji: famousViewModel.famousVolcanoes[step].flag
                                 )
-                            }
+            }
                             .padding(.horizontal)
                             
                             // Mini Quiz - different question for each volcano

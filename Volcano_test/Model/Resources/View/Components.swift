@@ -13,7 +13,7 @@ struct PuzzleRowView: View {
                     .frame(width: 70, height: 70)
                 
                 Image(puzzle.imageName)
-                    .resizable()
+                .resizable()
                     .scaledToFill()
                     .frame(width: 70, height: 70)
                     .clipShape(Circle())
@@ -89,9 +89,9 @@ struct WritingMoodView: View {
     }
     
     private func startTypingEffect() {
-        let words = fullText.split(separator: " ").map(String.init)
-        displayedText = ""
-        wordIndex = 0
+            let words = fullText.split(separator: " ").map(String.init)
+            displayedText = ""
+            wordIndex = 0
 
         Task {
             for word in words {
@@ -102,7 +102,7 @@ struct WritingMoodView: View {
                 
                 await MainActor.run {
                     displayedText += (wordIndex == 0 ? "" : " ") + word
-                    wordIndex += 1
+                        wordIndex += 1
                 }
             }
         }

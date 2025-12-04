@@ -2,13 +2,14 @@ import SwiftUI
 
 class PageViewModel: ObservableObject {
     @Published var pages: [PageModel] = []
-    private let persistenceService = PersistenceService.shared
+    private let persistenceService: PersistenceServiceProtocol
     
-    init() {
+    init(persistenceService: PersistenceServiceProtocol = PersistenceService.shared) {
+        self.persistenceService = persistenceService
         loadPages()
     }
     
-    private func loadPages() {
+    func loadPages() {
         // For testing: unlock all pages by default
         // Reordered: What Is Volcano? first, then Parts Of A Volcano, then History Of Earth
         pages = [
@@ -18,7 +19,8 @@ class PageViewModel: ObservableObject {
             PageModel(id: 4, title: "Types Of Volcanoes", isUnlocked: true),
             PageModel(id: 5, title: "Famous Volcanoes", isUnlocked: true),
             PageModel(id: 6, title: "Volcano Safety Tips", isUnlocked: true),
-            PageModel(id: 7, title: "Volcano Rocks & Minerals", isUnlocked: true)
+            PageModel(id: 7, title: "Volcano Rocks & Minerals", isUnlocked: true),
+            PageModel(id: 8, title: "Settings", isUnlocked: true)
         ]
         
         // Unlock all pages in persistence for testing

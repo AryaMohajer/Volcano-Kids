@@ -154,28 +154,4 @@ class SafetyTipsViewModel: ObservableObject {
     }
 }
 
-struct SafetyTip: Identifiable {
-    let id: Int
-    let title: String
-    let emoji: String
-    let shortDescription: String
-    let description: String
-    let microStory: String
-    let funFact: String
-    let icon: String
-    let color: Color
-}
-
-struct SafetyGearItem: Identifiable {
-    let id: Int
-    let name: String
-    let emoji: String
-    let description: String
-}
-
-struct SafetyQuizQuestion {
-    let question: String
-    let options: [String]
-    let correctAnswer: Int
-}
 

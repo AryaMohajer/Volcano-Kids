@@ -105,19 +105,4 @@ class EarthHistoryViewModel: ObservableObject {
     }
 }
 
-struct EarthHistoryStage: Identifiable {
-    let id: Int
-    let title: String
-    let emoji: String
-    let description: String
-    let microStory: String
-    let funFact: String
-    let color: Color
-}
-
-struct HistoryQuizQuestion {
-    let question: String
-    let options: [String]
-    let correctAnswer: Int
-}
 
