@@ -75,6 +75,18 @@ class PuzzleViewModel: ObservableObject {
         return grid[coord.x][coord.y]
     }
     
+    // MARK: - Help/Hint Feature
+    func getHint() -> Coord? {
+        return puzzleModel.getHint()
+    }
+    
+    func showHint() {
+        if let hintCoord = getHint() {
+            // Highlight the tile that should be moved
+            // This will be handled in the view
+        }
+    }
+    
     // MARK: - PRECISE Image Slicing (Inspired by SwiftImage approach)
     private static func sliceImagePrecisely(named imageName: String,
                                           columns: Int,

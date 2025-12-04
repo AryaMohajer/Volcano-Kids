@@ -112,6 +112,80 @@ struct DetailView8: View {
                                 }
                             }
                         )
+                        
+                        // Contact & Legal
+                        settingsSection(
+                            title: "📧 Contact & Legal",
+                            content: {
+                                VStack(spacing: AppTheme.Spacing.medium) {
+                                    // Contact Button
+                                    Button(action: {
+                                        openEmail()
+                                    }) {
+                                        HStack {
+                                            Image(systemName: "envelope.fill")
+                                                .font(.system(size: 20))
+                                            Text("Contact Us")
+                                                .font(.custom("Noteworthy-Bold", size: 18))
+                                            Spacer()
+                                            Image(systemName: "chevron.right")
+                                                .font(.system(size: 16))
+                                                .foregroundColor(.white.opacity(0.6))
+                                        }
+                                        .foregroundColor(.white)
+                                        .padding(AppTheme.Spacing.medium)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
+                                                .fill(Color.white.opacity(0.05))
+                                        )
+                                    }
+                                    
+                                    // Privacy Policy Button
+                                    Button(action: {
+                                        openURL("https://mercurial-floor-265.notion.site/privacy-policy-Volcano-app-2bf17fca8681800195f2c71e52dda27f")
+                                    }) {
+                                        HStack {
+                                            Image(systemName: "lock.shield.fill")
+                                                .font(.system(size: 20))
+                                            Text("Privacy Policy")
+                                                .font(.custom("Noteworthy-Bold", size: 18))
+                                            Spacer()
+                                            Image(systemName: "chevron.right")
+                                                .font(.system(size: 16))
+                                                .foregroundColor(.white.opacity(0.6))
+                                        }
+                                        .foregroundColor(.white)
+                                        .padding(AppTheme.Spacing.medium)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
+                                                .fill(Color.white.opacity(0.05))
+                                        )
+                                    }
+                                    
+                                    // Terms and Conditions Button
+                                    Button(action: {
+                                        openURL("https://mercurial-floor-265.notion.site/Terms-Condition-Volcano-app-2bf17fca86818048bce1d0f144dade2a")
+                                    }) {
+                                        HStack {
+                                            Image(systemName: "doc.text.fill")
+                                                .font(.system(size: 20))
+                                            Text("Terms and Conditions")
+                                                .font(.custom("Noteworthy-Bold", size: 18))
+                                            Spacer()
+                                            Image(systemName: "chevron.right")
+                                                .font(.system(size: 16))
+                                                .foregroundColor(.white.opacity(0.6))
+                                        }
+                                        .foregroundColor(.white)
+                                        .padding(AppTheme.Spacing.medium)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
+                                                .fill(Color.white.opacity(0.05))
+                                        )
+                                    }
+                                }
+                            }
+                        )
                     }
                     .padding(.horizontal, AppTheme.Spacing.medium)
                     
@@ -188,7 +262,7 @@ struct DetailView8: View {
                 }
             }
         } message: {
-            Text("Are you sure you want to reset all progress? This will lock all pages except the first one and reset the theme to default.")
+            Text("Are you sure?? ")
         }
     }
     
@@ -331,6 +405,20 @@ struct DetailView8: View {
             )
         }
         .buttonStyle(PlainButtonStyle())
+    }
+    
+    // MARK: - Helper Functions
+    private func openEmail() {
+        let email = "ariyamohajer321@gmail.com"
+        if let url = URL(string: "mailto:\(email)") {
+            UIApplication.shared.open(url)
+        }
+    }
+    
+    private func openURL(_ urlString: String) {
+        if let url = URL(string: urlString) {
+            UIApplication.shared.open(url)
+        }
     }
 }
 

@@ -1,9 +1,9 @@
 import Foundation
 
 /// A simple coordinate struct used in the puzzle grid.
-struct Coord: Equatable {
-    var x: Int
-    var y: Int
+struct Coord: Hashable {
+    let x: Int
+    let y: Int
 }
 
 /// Encapsulates the core puzzle data (the grid of tile coordinates).
@@ -42,11 +42,48 @@ struct PuzzleModel {
     
     // MARK: - Puzzle Logic
     
-    /// Shuffle the puzzle randomly (not guaranteed solvable).
+    /// Shuffle the puzzle by making valid random moves from solved state (guarantees solvability).
     mutating func shuffle() {
-        let flattened = data.flatMap { $0 }
-        let shuffled = flattened.shuffled()
-        data = Array(shuffled.chunked(into: rows))
+        // Start from solved state
+        sort()
+        
+        // Make many random valid moves to shuffle
+        let shuffleMoves = max(columns * rows * 20, 100) // More moves for larger puzzles
+        
+        for _ in 0..<shuffleMoves {
+            guard let empty = emptyCoord() else { continue }
+            
+            // Get all valid adjacent tiles
+            var validMoves: [Coord] = []
+            
+            // Check all 4 directions
+            let directions = [
+                Coord(x: empty.x - 1, y: empty.y),     // Left
+                Coord(x: empty.x + 1, y: empty.y),     // Right
+                Coord(x: empty.x, y: empty.y - 1),     // Up
+                Coord(x: empty.x, y: empty.y + 1)      // Down
+            ]
+            
+            for dir in directions {
+                if isValidCoord(dir) && tile(at: dir) != nil {
+                    validMoves.append(dir)
+                }
+            }
+            
+            // Randomly pick one valid move
+            if let randomMove = validMoves.randomElement() {
+                swapTiles(at: randomMove, and: empty)
+            }
+        }
+    }
+    
+    func isValidCoord(_ coord: Coord) -> Bool {
+        return coord.x >= 0 && coord.x < columns && coord.y >= 0 && coord.y < rows
+    }
+    
+    func tile(at coord: Coord) -> Coord? {
+        guard isValidCoord(coord) else { return nil }
+        return data[coord.x][coord.y]
     }
     
     /// Reset back to the sorted arrangement.
@@ -56,6 +93,7 @@ struct PuzzleModel {
     
     /// Swaps the content of two cells in the grid.
     mutating func swapTiles(at c1: Coord, and c2: Coord) {
+        guard isValidCoord(c1) && isValidCoord(c2) else { return }
         let tmp = data[c1.x][c1.y]
         data[c1.x][c1.y] = data[c2.x][c2.y]
         data[c2.x][c2.y] = tmp
@@ -87,7 +125,54 @@ struct PuzzleModel {
             }
         }
         return true
-        
     }
     
+    // MARK: - Help/Hint: Find next best move
+    /// Returns a coordinate that should be moved next (if any)
+    func getHint() -> Coord? {
+        guard let empty = emptyCoord() else { return nil }
+        
+        // Check all adjacent tiles
+        let adjacentTiles = [
+            Coord(x: empty.x - 1, y: empty.y),     // Left
+            Coord(x: empty.x + 1, y: empty.y),     // Right
+            Coord(x: empty.x, y: empty.y - 1),     // Up
+            Coord(x: empty.x, y: empty.y + 1)      // Down
+        ]
+        
+        // Find tile that should be in the empty position
+        let targetCoord = empty
+        
+        // Check if any adjacent tile should be in the empty position
+        for tileCoord in adjacentTiles {
+            guard isValidCoord(tileCoord),
+                  let tileAtPos = tile(at: tileCoord) else { continue }
+            
+            // If this tile should be at the empty position, suggest moving it
+            if tileAtPos == targetCoord {
+                return tileCoord
+            }
+        }
+        
+        // If no direct match, find the tile that should be closest to its correct position
+        var bestMove: Coord?
+        var bestScore = Int.max
+        
+        for tileCoord in adjacentTiles {
+            guard isValidCoord(tileCoord),
+                  let tileAtPos = tile(at: tileCoord) else { continue }
+            
+            // Calculate Manhattan distance from current position to correct position
+            let distance = abs(tileAtPos.x - tileCoord.x) + abs(tileAtPos.y - tileCoord.y)
+            
+            // If moving this tile would reduce distance, it's a good hint
+            let newDistance = abs(tileAtPos.x - empty.x) + abs(tileAtPos.y - empty.y)
+            if newDistance < distance && newDistance < bestScore {
+                bestScore = newDistance
+                bestMove = tileCoord
+            }
+        }
+        
+        return bestMove
+    }
 }

@@ -103,10 +103,10 @@ struct PuzzleView: View {
                             viewModel.sort()
                         }
                     }) {
-            HStack {
+                        HStack {
                             Image(systemName: "arrow.counterclockwise")
                             Text("Reset")
-                }
+                        }
                         .font(.custom("Noteworthy-Bold", size: 18))
                         .foregroundColor(.white)
                         .padding()
@@ -114,9 +114,9 @@ struct PuzzleView: View {
                             RoundedRectangle(cornerRadius: 12)
                                 .fill(Color.blue.opacity(0.8))
                         )
-            }
-        }
-        .padding()
+                    }
+                }
+                .padding()
                 }
             }
         }
