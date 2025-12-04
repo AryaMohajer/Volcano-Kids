@@ -25,16 +25,38 @@ struct PuzzleView: View {
             )
             .ignoresSafeArea()
             
-            VStack(spacing: 20) {
-                Text("Sliding Puzzle")
-                    .font(.custom("Noteworthy-Bold", size: 36))
-                    .foregroundColor(.white)
-                    .shadow(radius: 5)
+            VStack(spacing: 0) {
+                // Header with back button
+                HStack {
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 18, weight: .semibold))
+                            Text("Back")
+                                .font(.custom("Noteworthy-Bold", size: 17))
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                    }
+                    
+                    Spacer()
+                }
+                .padding(.horizontal, AppTheme.Spacing.medium)
+                .padding(.top, AppTheme.Spacing.small)
                 
-                Text("Moves: \(viewModel.moveCount)")
-                    .font(.custom("Noteworthy-Bold", size: 20))
-                    .foregroundColor(.white.opacity(0.9))
-                    .padding(.bottom, 10)
+                VStack(spacing: 20) {
+                    Text("Sliding Puzzle")
+                        .font(.custom("Noteworthy-Bold", size: 36))
+                        .foregroundColor(.white)
+                        .shadow(radius: 5)
+                    
+                    Text("Moves: \(viewModel.moveCount)")
+                        .font(.custom("Noteworthy-Bold", size: 20))
+                        .foregroundColor(.white.opacity(0.9))
+                        .padding(.bottom, 10)
                 
                 // Puzzle layout with better styling
                 VStack(spacing: 4) {
@@ -97,6 +119,7 @@ struct PuzzleView: View {
                     }
                 }
                 .padding()
+                }
             }
         }
         .navigationBarBackButtonHidden(true)

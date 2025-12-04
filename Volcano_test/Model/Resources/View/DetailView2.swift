@@ -170,9 +170,10 @@ struct DetailView2: View {
                             )
                             .padding(.horizontal)
                             
-                            // Next button (only show if not last step)
-                            if !introViewModel.isLastStep {
-                                HStack {
+                            // Navigation buttons
+                            HStack(spacing: AppTheme.Spacing.medium) {
+                                // Next button (only show if not last step)
+                                if !introViewModel.isLastStep {
                                     Spacer()
                                     Button(action: {
                                         introViewModel.nextStep()
@@ -197,13 +198,34 @@ struct DetailView2: View {
                                         )
                                     }
                                     Spacer()
+                                } else {
+                                    // Last step - show puzzle games button
+                                    Spacer()
+                                    NavigationLink(destination: PuzzleListView()) {
+                                        HStack {
+                                            Image(systemName: "puzzlepiece.fill")
+                                            Text("Play Puzzle Games")
+                                        }
+                                        .font(.custom("Noteworthy-Bold", size: 18))
+                                        .foregroundColor(.white)
+                                        .padding(.horizontal, AppTheme.Spacing.large)
+                                        .padding(.vertical, AppTheme.Spacing.medium)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
+                                                .fill(
+                                                    LinearGradient(
+                                                        colors: [.purple, .blue],
+                                                        startPoint: .leading,
+                                                        endPoint: .trailing
+                                                    )
+                                                )
+                                        )
+                                    }
+                                    Spacer()
                                 }
-                                .padding(.horizontal)
-                                .padding(.bottom, AppTheme.Spacing.extraLarge)
-                            } else {
-                                Spacer()
-                                    .frame(height: AppTheme.Spacing.extraLarge)
                             }
+                            .padding(.horizontal)
+                            .padding(.bottom, AppTheme.Spacing.extraLarge)
                         }
                     }
                     .tag(step)
