@@ -201,29 +201,6 @@ struct QuizOptionButton: View {
                     .multilineTextAlignment(.leading)
                 
                 Spacer()
-                
-                // Additional visual indicator on the right for extra clarity
-                if showResult && isCorrectOption {
-                    Text("✓ CORRECT")
-                        .font(.custom("Noteworthy-Bold", size: 16))
-                        .foregroundColor(.green)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(
-                            Capsule()
-                                .fill(Color.green.opacity(0.2))
-                        )
-                } else if showResult && isSelected && !isCorrect {
-                    Text("✗ WRONG")
-                        .font(.custom("Noteworthy-Bold", size: 16))
-                        .foregroundColor(.red)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(
-                            Capsule()
-                                .fill(Color.red.opacity(0.2))
-                        )
-                }
             }
             .padding(AppTheme.Spacing.medium)
             .background(

@@ -67,20 +67,6 @@ struct DetailView8: View {
                             }
                         )
                         
-                        // Haptic Feedback
-                        settingsSection(
-                            title: "📳 Haptic Feedback",
-                            content: {
-                                VStack(spacing: AppTheme.Spacing.medium) {
-                                    settingsToggleRow(
-                                        icon: "hand.tap.fill",
-                                        title: "Vibration Feedback",
-                                        isOn: $settingsViewModel.isHapticEnabled
-                                    )
-                                }
-                            }
-                        )
-                        
                         // App Information
                         settingsSection(
                             title: "ℹ️ App Information",

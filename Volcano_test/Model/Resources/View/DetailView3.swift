@@ -322,16 +322,15 @@ struct DetailView3: View {
                             )
                             .padding()
                         } else {
-                            // Wrong answer - show score and restart option
+                            // Wrong answer - show score and options
                             WrongAnswerResultsView(
                                 score: quizViewModel.lastScore,
                                 total: quizViewModel.totalQuestions,
                                 onRestart: {
                                     quizViewModel.resetQuiz()
                                 },
-                                onBack: {
-                                    detailViewModel.switchToEducational()
-                                    quizViewModel.resetQuiz()
+                                onContinue: {
+                                    quizViewModel.continueToNextQuestion()
                                 }
                             )
                             .padding()
@@ -340,11 +339,6 @@ struct DetailView3: View {
                 }
                 .padding(.bottom, 30)
             }
-        }
-        .alert("Wrong Answer! ❌", isPresented: $quizViewModel.showWrongAnswerAlert) {
-            Button("OK") { }
-        } message: {
-            Text("That's not quite right. Let's start over from the beginning!")
         }
     }
 }
@@ -419,7 +413,7 @@ struct WrongAnswerResultsView: View {
     let score: Int
     let total: Int
     let onRestart: () -> Void
-    let onBack: () -> Void
+    let onContinue: () -> Void
     
     var body: some View {
         VStack(spacing: 25) {
@@ -457,7 +451,7 @@ struct WrongAnswerResultsView: View {
                         .foregroundColor(.white)
                 }
                 
-                Text("Let's start over and try again! 💪")
+                Text("You can try again or continue! 💪")
                     .font(.custom("Noteworthy-Bold", size: 20))
                     .foregroundColor(.yellow)
                     .multilineTextAlignment(.center)
@@ -485,11 +479,11 @@ struct WrongAnswerResultsView: View {
                     )
                 }
                 
-                Button(action: onBack) {
+                Button(action: onContinue) {
                     HStack {
-                        Image(systemName: "book.fill")
-                        Text("Review")
-        }
+                        Image(systemName: "arrow.right.circle.fill")
+                        Text("Continue")
+                    }
                     .font(.custom("Noteworthy-Bold", size: 18))
                     .foregroundColor(.white)
                     .padding()

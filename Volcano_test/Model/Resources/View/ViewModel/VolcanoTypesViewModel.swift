@@ -88,6 +88,36 @@ class VolcanoTypesViewModel: ObservableObject {
     func isFactRevealed(for index: Int) -> Bool {
         revealedFacts.contains(index)
     }
+    
+    // Quiz questions for each volcano type
+    func getQuizQuestion(for step: Int) -> QuizQuestion {
+        switch step {
+        case 0: // Shield Volcano
+            return QuizQuestion(
+                question: "What shape are shield volcanoes?",
+                options: ["Tall and pointy", "Wide and flat", "Small and steep", "Round"],
+                correctAnswer: 1
+            )
+        case 1: // Composite Volcano
+            return QuizQuestion(
+                question: "What are composite volcanoes made of?",
+                options: ["Only lava", "Layers of lava and ash", "Only ash", "Water"],
+                correctAnswer: 1
+            )
+        case 2: // Cinder Cone
+            return QuizQuestion(
+                question: "What is the smallest type of volcano?",
+                options: ["Shield volcano", "Composite volcano", "Cinder cone", "All are the same size"],
+                correctAnswer: 2
+            )
+        default:
+            return QuizQuestion(
+                question: "What shape are shield volcanoes?",
+                options: ["Tall and pointy", "Wide and flat", "Small and steep", "Round"],
+                correctAnswer: 1
+            )
+        }
+    }
 }
 
 

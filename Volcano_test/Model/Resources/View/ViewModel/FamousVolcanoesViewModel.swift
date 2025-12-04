@@ -119,10 +119,18 @@ class FamousVolcanoesViewModel: ObservableObject {
     
     func nextStep() {
         if currentStep < famousVolcanoes.count - 1 {
+            // Reset quiz state for the new step
+            resetQuizState()
             withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
                 currentStep += 1
             }
         }
+    }
+    
+    func resetQuizState() {
+        currentQuizAnswer = nil
+        showQuizResult = false
+        isQuizCorrect = false
     }
     
     func toggleFactReveal(for index: Int) {
@@ -138,9 +146,13 @@ class FamousVolcanoesViewModel: ObservableObject {
         isQuizCorrect = answerIndex == question.correctAnswer
         showQuizResult = true
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            self.showQuizResult = false
-            self.currentQuizAnswer = nil
+        // Only hide feedback for wrong answers after a delay
+        // Keep correct answers visible
+        if !isQuizCorrect {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                self.showQuizResult = false
+                self.currentQuizAnswer = nil
+            }
         }
     }
 }

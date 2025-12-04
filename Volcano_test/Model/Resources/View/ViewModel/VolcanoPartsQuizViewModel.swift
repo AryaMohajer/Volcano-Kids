@@ -7,7 +7,6 @@ class VolcanoPartsQuizViewModel: ObservableObject {
     @Published var quizAnswers: [Int] = []
     @Published var showQuizResults: Bool = false
     @Published var quizScore: Int = 0
-    @Published var showWrongAnswerAlert: Bool = false
     @Published var lastScore: Int = 0
     
     // Quiz questions - 30 questions
@@ -100,14 +99,13 @@ class VolcanoPartsQuizViewModel: ObservableObject {
                 }
             }
         } else {
-            // Wrong answer - restart from first question
+            // Wrong answer - show score page (don't restart immediately)
             if isHapticEnabled {
                 HapticService.shared.error()
             }
             lastScore = quizScore
             
-            // Show wrong answer alert and results immediately
-            showWrongAnswerAlert = true
+            // Show results page with options to continue or restart
             showQuizResults = true
         }
     }
@@ -117,8 +115,25 @@ class VolcanoPartsQuizViewModel: ObservableObject {
         quizAnswers = []
         quizScore = 0
         showQuizResults = false
-        showWrongAnswerAlert = false
         lastScore = 0
+    }
+    
+    /// Continue to next question after wrong answer (ignore the wrong answer)
+    func continueToNextQuestion() {
+        // Hide results
+        showQuizResults = false
+        
+        // Move to next question (don't increment score, just continue)
+        if currentQuestionIndex < quizQuestions.count - 1 {
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                currentQuestionIndex += 1
+            }
+        } else {
+            // Reached the end - show final results
+            withAnimation {
+                showQuizResults = true
+            }
+        }
     }
 }
 
