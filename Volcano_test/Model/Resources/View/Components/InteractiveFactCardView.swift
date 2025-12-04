@@ -79,11 +79,11 @@ struct MiniQuizBlockView: View {
                         selectedAnswer: selectedAnswer,
                         showResult: showResult,
                         isCorrect: isCorrect,
+                        correctAnswerIndex: correctAnswer,
                         onTap: {
                             onAnswerSelected(index)
                         }
                     )
-                    .disabled(selectedAnswer != nil)
                 }
             }
         }
@@ -102,63 +102,165 @@ struct QuizOptionButton: View {
     let selectedAnswer: Int?
     let showResult: Bool
     let isCorrect: Bool
+    let correctAnswerIndex: Int
     let onTap: () -> Void
     
+    @State private var iconScale: CGFloat = 1.0
+    
+    private var isSelected: Bool {
+        selectedAnswer == index
+    }
+    
+    private var isCorrectOption: Bool {
+        index == correctAnswerIndex
+    }
+    
     private var backgroundColor: Color {
-        if selectedAnswer == index {
-            if showResult && isCorrect {
-                return Color.green.opacity(0.3)
-            } else if showResult && !isCorrect {
-                return Color.red.opacity(0.3)
+        if showResult {
+            if isCorrectOption {
+                return Color.green.opacity(0.4)
+            } else if isSelected && !isCorrect {
+                return Color.red.opacity(0.4)
             } else {
-                return Color.white.opacity(0.2)
+                return Color.white.opacity(0.1)
             }
+        } else if isSelected {
+            return Color.white.opacity(0.2)
         } else {
             return Color.white.opacity(0.1)
         }
     }
     
-    private var statusIcon: Image? {
-        guard selectedAnswer == index else { return nil }
-        
-        if showResult && isCorrect {
-            return Image(systemName: "checkmark.circle.fill")
-        } else if showResult && !isCorrect {
-            return Image(systemName: "xmark.circle.fill")
+    private var borderColor: Color {
+        if showResult {
+            if isCorrectOption {
+                return Color.green
+            } else if isSelected && !isCorrect {
+                return Color.red
+            } else {
+                return Color.clear
+            }
+        } else if isSelected {
+            return Color.white.opacity(0.5)
         } else {
-            return Image(systemName: "circle.fill")
+            return Color.clear
         }
     }
     
-    private var iconColor: Color {
-        if showResult && isCorrect {
-            return .green
-        } else if showResult && !isCorrect {
-            return .red
-        } else {
-            return .white.opacity(0.5)
+    private var statusIcon: Image? {
+        if showResult {
+            if isCorrectOption {
+                return Image(systemName: "checkmark.circle.fill")
+            } else if isSelected && !isCorrect {
+                return Image(systemName: "xmark.circle.fill")
+            }
+        } else if isSelected {
+            return Image(systemName: "circle.fill")
         }
+        return nil
+    }
+    
+    private var iconColor: Color {
+        if showResult {
+            if isCorrectOption {
+                return .green
+            } else if isSelected && !isCorrect {
+                return .red
+            }
+        }
+        return .white.opacity(0.5)
     }
     
     var body: some View {
         Button(action: onTap) {
-            HStack {
+            HStack(spacing: AppTheme.Spacing.medium) {
+                // Status icon on the left - larger and more prominent
+                if let icon = statusIcon {
+                    icon
+                        .font(.system(size: 32, weight: .bold))
+                        .foregroundColor(iconColor)
+                        .scaleEffect(iconScale)
+                        .animation(.spring(response: 0.4, dampingFraction: 0.6), value: iconScale)
+                } else if showResult && isCorrectOption {
+                    // Show checkmark even if not selected (correct answer indicator)
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 32, weight: .bold))
+                        .foregroundColor(.green)
+                        .scaleEffect(iconScale)
+                        .animation(.spring(response: 0.4, dampingFraction: 0.6), value: iconScale)
+                } else {
+                    // Placeholder to maintain spacing
+                    Circle()
+                        .fill(Color.clear)
+                        .frame(width: 32, height: 32)
+                }
+                
                 Text(option)
-                    .font(.custom("Noteworthy-Bold", size: 16))
+                    .font(.custom("Noteworthy-Bold", size: 18))
                     .foregroundColor(.white)
+                    .multilineTextAlignment(.leading)
                 
                 Spacer()
                 
-                if let icon = statusIcon {
-                    icon
-                        .foregroundColor(iconColor)
+                // Additional visual indicator on the right for extra clarity
+                if showResult && isCorrectOption {
+                    Text("✓ CORRECT")
+                        .font(.custom("Noteworthy-Bold", size: 16))
+                        .foregroundColor(.green)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            Capsule()
+                                .fill(Color.green.opacity(0.2))
+                        )
+                } else if showResult && isSelected && !isCorrect {
+                    Text("✗ WRONG")
+                        .font(.custom("Noteworthy-Bold", size: 16))
+                        .foregroundColor(.red)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            Capsule()
+                                .fill(Color.red.opacity(0.2))
+                        )
                 }
             }
             .padding(AppTheme.Spacing.medium)
             .background(
-                RoundedRectangle(cornerRadius: AppTheme.CornerRadius.small)
+                RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
                     .fill(backgroundColor)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
+                            .stroke(borderColor, lineWidth: 3)
+                    )
             )
+            .shadow(
+                color: showResult && (isCorrectOption || (isSelected && !isCorrect)) ? 
+                    (isCorrectOption ? Color.green.opacity(0.6) : Color.red.opacity(0.6)) : 
+                    Color.clear,
+                radius: showResult ? 10 : 0
+            )
+        }
+        .disabled(selectedAnswer != nil)
+        .onAppear {
+            if showResult && (isSelected || isCorrectOption) {
+                iconScale = 1.3
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                    withAnimation {
+                        iconScale = 1.0
+                    }
+                }
+            }
+        }
+        .onChange(of: showResult) { newValue in
+            if newValue && (isSelected || isCorrectOption) {
+                iconScale = 1.3
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                    withAnimation {
+                        iconScale = 1.0
+                    }
+                }
+            }
         }
     }
 }

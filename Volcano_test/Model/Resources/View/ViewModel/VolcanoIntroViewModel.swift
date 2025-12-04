@@ -14,7 +14,7 @@ class VolcanoIntroViewModel: ObservableObject {
             id: 0,
             title: "What is a Volcano?",
             emoji: "🌋",
-            description: "A volcano is an opening in the Earth's surface.",
+            description: "A volcano is an opening in the Earth's surface where hot rocks, gases, and sometimes lava can come out. It’s like a special doorway deep inside our planet!",
             microStory: "Imagine the Earth has a special door that opens sometimes. When it opens, hot, melted rock called lava comes out! That door is called a volcano, and it's one of the most amazing things on our planet!",
             funFact: "There are about 1,500 active volcanoes in the world!",
             color: .red

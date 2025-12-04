@@ -9,7 +9,7 @@ struct PageItemView: View {
         ZStack {
    
             NavigationLink(destination: destinationView(for: page.id)) {
-                Image("image\(page.id)")
+                Image(imageName(for: page.id))
                     .resizable()
                     .scaledToFill()
                     .frame(width: AppTheme.Sizes.cardWidth, height: AppTheme.Sizes.cardHeight)
@@ -55,7 +55,23 @@ struct PageItemView: View {
         // Audio is now managed at app level, no need to play here
 
     }
-
+    
+    /// Get the correct image name based on page id
+    private func imageName(for id: Int) -> String {
+        switch id {
+        case 4:
+            return "Types Of Volcanoes"
+        case 5:
+            return "Famouse Volcanoes" // Note: matches the imageset name (typo in asset name)
+        case 6:
+            return "Volcano Safety Tips"
+        case 7:
+            return "Volcano Rocks"
+        default:
+            // For pages 1, 2, 3, use the original naming convention
+            return "image\(id)"
+        }
+    }
 
     @ViewBuilder
     private func destinationView(for id: Int) -> some View {
