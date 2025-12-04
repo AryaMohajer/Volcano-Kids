@@ -18,7 +18,7 @@ struct DetailView5: View {
         _famousViewModel = StateObject(wrappedValue: famousVM)
         _quizViewModel = StateObject(wrappedValue: FamousVolcanoesQuizViewModel(famousViewModel: famousVM))
     }
-    
+
     var body: some View {
         ZStack {
             // Dynamic gradient background based on selected theme
@@ -69,7 +69,7 @@ struct DetailView5: View {
                     }
                 }
                 .padding()
-                
+
                 if detailViewModel.currentSection == 0 {
                     // Educational Section
                     educationalSection
