@@ -87,8 +87,14 @@ struct DetailView1: View {
             ModelView()
         }
         .onChange(of: historyViewModel.currentStep) { newStep in
-            // Reset quiz state when step changes
-            historyViewModel.resetQuizState()
+            // Restore answer for this step if it exists
+            if let savedAnswer = historyViewModel.stepAnswers[newStep] {
+                historyViewModel.currentQuizAnswer = savedAnswer
+                historyViewModel.showQuizResult = true
+                historyViewModel.isQuizCorrect = historyViewModel.stepQuizResults[newStep] ?? false
+            } else {
+                historyViewModel.resetQuizState()
+            }
             // Mark page as completed when user reaches the last step
             if historyViewModel.isLastStep {
                 viewModel.completePage(pageId)

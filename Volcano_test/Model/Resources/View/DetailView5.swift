@@ -81,8 +81,14 @@ struct DetailView5: View {
         }
         .navigationBarBackButtonHidden(true)
         .onChange(of: famousViewModel.currentStep) { newStep in
-            // Reset quiz state when step changes
-            famousViewModel.resetQuizState()
+            // Restore answer for this step if it exists
+            if let savedAnswer = famousViewModel.stepAnswers[newStep] {
+                famousViewModel.currentQuizAnswer = savedAnswer
+                famousViewModel.showQuizResult = true
+                famousViewModel.isQuizCorrect = famousViewModel.stepQuizResults[newStep] ?? false
+            } else {
+                famousViewModel.resetQuizState()
+            }
             // Mark page as completed when user reaches the last step
             if famousViewModel.isLastStep {
                 viewModel.completePage(pageId)

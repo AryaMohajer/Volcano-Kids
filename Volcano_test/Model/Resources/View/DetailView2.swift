@@ -81,8 +81,14 @@ struct DetailView2: View {
         }
         .navigationBarBackButtonHidden(true)
         .onChange(of: introViewModel.currentStep) { newStep in
-            // Reset quiz state when step changes
-            introViewModel.resetQuizState()
+            // Restore answer for this step if it exists
+            if let savedAnswer = introViewModel.stepAnswers[newStep] {
+                introViewModel.currentQuizAnswer = savedAnswer
+                introViewModel.showQuizResult = true
+                introViewModel.isQuizCorrect = introViewModel.stepQuizResults[newStep] ?? false
+            } else {
+                introViewModel.resetQuizState()
+            }
             // Mark page as completed when user reaches the last step
             if introViewModel.isLastStep {
                 viewModel.completePage(pageId)

@@ -84,8 +84,14 @@ struct DetailView6: View {
         .navigationBarHidden(true)
         .navigationBarBackButtonHidden(true)
         .onChange(of: safetyViewModel.currentStep) { newStep in
-            // Reset quiz state when step changes
-            safetyViewModel.resetQuizState()
+            // Restore answer for this step if it exists
+            if let savedAnswer = safetyViewModel.stepAnswers[newStep] {
+                safetyViewModel.currentQuizAnswer = savedAnswer
+                safetyViewModel.showQuizResult = true
+                safetyViewModel.isQuizCorrect = safetyViewModel.stepQuizResults[newStep] ?? false
+            } else {
+                safetyViewModel.resetQuizState()
+            }
             // Mark page as completed when user reaches the last step
             if safetyViewModel.isLastStep {
                 viewModel.completePage(pageId)

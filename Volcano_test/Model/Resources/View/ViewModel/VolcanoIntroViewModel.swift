@@ -8,6 +8,8 @@ class VolcanoIntroViewModel: ObservableObject {
     @Published var currentQuizAnswer: Int? = nil
     @Published var showQuizResult = false
     @Published var isQuizCorrect = false
+    @Published var stepAnswers: [Int: Int] = [:] // Store answers per step
+    @Published var stepQuizResults: [Int: Bool] = [:] // Store quiz results per step
     
     let introStages: [VolcanoIntroStage] = [
         VolcanoIntroStage(
@@ -94,18 +96,31 @@ class VolcanoIntroViewModel: ObservableObject {
     
     func nextStep() {
         if currentStep < introStages.count - 1 {
-            // Reset quiz state for the new step
-            resetQuizState()
+            // Don't reset quiz state - preserve answers
+            // Just move to next step and restore its answer if exists
             withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
                 currentStep += 1
+            }
+            // Restore answer for this step if it exists
+            if let savedAnswer = stepAnswers[currentStep] {
+                currentQuizAnswer = savedAnswer
+                showQuizResult = true
+                isQuizCorrect = stepQuizResults[currentStep] ?? false
+            } else {
+                currentQuizAnswer = nil
+                showQuizResult = false
+                isQuizCorrect = false
             }
         }
     }
     
     func resetQuizState() {
-        currentQuizAnswer = nil
-        showQuizResult = false
-        isQuizCorrect = false
+        // Only reset for current step if no answer saved
+        if stepAnswers[currentStep] == nil {
+            currentQuizAnswer = nil
+            showQuizResult = false
+            isQuizCorrect = false
+        }
     }
     
     func toggleFactReveal(for index: Int) {
@@ -121,12 +136,19 @@ class VolcanoIntroViewModel: ObservableObject {
         isQuizCorrect = answerIndex == question.correctAnswer
         showQuizResult = true
         
+        // Store answer and result for this step
+        stepAnswers[currentStep] = answerIndex
+        stepQuizResults[currentStep] = isQuizCorrect
+        
         // Only hide feedback for wrong answers after a delay
         // Keep correct answers visible
         if !isQuizCorrect {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                self.showQuizResult = false
-                self.currentQuizAnswer = nil
+                // Don't clear if this is a saved answer
+                if self.stepAnswers[self.currentStep] == nil {
+                    self.showQuizResult = false
+                    self.currentQuizAnswer = nil
+                }
             }
         }
     }

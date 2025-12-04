@@ -220,28 +220,26 @@ struct DetailView3: View {
     // MARK: - Quiz Section
     private var quizSection: some View {
         VStack(spacing: 0) {
-            // Header with back button (only show when not showing results)
-            if !quizViewModel.showQuizResults {
-                HStack {
-                    Button(action: {
-                        detailViewModel.switchToEducational()
-                        quizViewModel.resetQuiz()
-                    }) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "chevron.left")
-                                .font(.system(size: 18, weight: .semibold))
-                            Text("Back")
-                                .font(.custom("Noteworthy-Bold", size: 17))
-                        }
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
+            // Header with back button (always show)
+            HStack {
+                Button(action: {
+                    detailViewModel.switchToEducational()
+                    quizViewModel.resetQuiz()
+                }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 18, weight: .semibold))
+                        Text("Back")
+                            .font(.custom("Noteworthy-Bold", size: 17))
                     }
-                    Spacer()
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
                 }
-                .padding(.horizontal, AppTheme.Spacing.medium)
-                .padding(.top, AppTheme.Spacing.small)
+                Spacer()
             }
+            .padding(.horizontal, AppTheme.Spacing.medium)
+            .padding(.top, AppTheme.Spacing.small)
             
             ScrollView {
                 VStack(spacing: 25) {
@@ -554,7 +552,7 @@ struct SuccessResultsView: View {
                     .shadow(radius: 15)
             )
             
-            // Back button
+            // Continue button (no back button - header has it)
             Button(action: onBack) {
                 HStack {
                     Image(systemName: "checkmark.circle.fill")
@@ -567,7 +565,7 @@ struct SuccessResultsView: View {
                     RoundedRectangle(cornerRadius: 15)
                         .fill(Color.green.opacity(0.7))
                 )
-    }
+            }
         }
     }
 }

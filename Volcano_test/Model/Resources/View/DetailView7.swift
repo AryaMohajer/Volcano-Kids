@@ -84,8 +84,14 @@ struct DetailView7: View {
         .navigationBarHidden(true)
         .navigationBarBackButtonHidden(true)
         .onChange(of: rocksViewModel.currentStep) { newStep in
-            // Reset quiz state when step changes
-            rocksViewModel.resetQuizState()
+            // Restore answer for this step if it exists
+            if let savedAnswer = rocksViewModel.stepAnswers[newStep] {
+                rocksViewModel.currentQuizAnswer = savedAnswer
+                rocksViewModel.showQuizResult = true
+                rocksViewModel.isQuizCorrect = rocksViewModel.stepQuizResults[newStep] ?? false
+            } else {
+                rocksViewModel.resetQuizState()
+            }
             // Mark page as completed when user reaches the last step
             if rocksViewModel.isLastStep {
                 viewModel.completePage(pageId)
